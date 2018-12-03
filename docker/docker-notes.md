@@ -137,8 +137,90 @@ f3912fdb365b  hello-world  "/hello"  5 seconds ago  Exited (0) 3 seconds ago    
 5856302872b0  ubuntu       "bash"    2 hours ago    Exited (0) 6 minutes ago         naughty_ptolemy
 ```
 
-###  ###
 
+### Reference ###
+
+- [Get Started with Docker](https://docs.docker.com/get-started/)
+- [Docker Tutorial: Get Going From Scratch](https://stackify.com/docker-tutorial/)
+- [Docker Tutorial: Play With Containers](https://dzone.com/articles/docker-tutorial-play-with-containers-simple-exampl)
+- [Docker Tutorial -- Getting Started with Python, Redis, and Nginx](https://hackernoon.com/docker-tutorial-getting-started-with-python-redis-and-nginx-81a9d740d091)
+- [docker-curriculum.com](https://docker-curriculum.com/)
+- [R Docker tutorial](http://ropenscilabs.github.io/r-docker-tutorial/)
+
+
+## Make a Docker image ##
+
+There are 2 ways:
+- Write a `Dockerfile`.  Describe all the commands used to create the
+  image in the `Dockerfile`.
+- Save a container into an image.  Setup the environment in a
+  container, then export it into an image.
+
+
+### Via `Dockerfile` ###
+
+1. Write `Dockerfile`, mixed with commands and `Dockerfile`
+   directives.  For example:
+
+   ```dockerfile
+   # Specify on which image this image is built, equivalent to:
+   #     FROM ubuntu:latest
+   # As I know, Dockerfile directives are case-insensitive, so it is also equivalent to
+   #     from ubuntu
+   # You can also give a specific tag verson, such as:
+   #     FROM ubuntu:bionic-20181112
+   # You can check available tag version from https://hub.docker.com/
+   # For ubuntu, see https://hub.docker.com/_/ubuntu/
+   # In Dockerfile, comments are prefixed by '#'.
+   # The size of the container created from the latest ubuntu image is about 86.2MB.
+   FROM ubuntu
+
+   # Run the commands.  Here we install python3.
+   # Make sure to 'apt-get update' before 'apt-get install', and use 'apt-get' instead of 
+   # 'apt', otherwise, you will get a warning:
+   #     WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+   RUN apt-get update; apt-get install -y python3
+   
+   # Copy hello.py from your local filesystem into /tmp/ of the filesystem in the image
+   COPY hello.py /tmp/
+   
+   # Set the environment variable NAME as Simon
+   ENV NAME Simon
+   
+   # Set the default application or command on startup when you 'docker run' this image.
+   # Here is 'python3 /tmp/hello.py'
+   CMD ["python3", "/tmp/hello.py"]
+   ```
+
+1. Prepare all the other files needed.  For example, `hello.py`:
+
+   ```python
+   import os
+   print("Hello " + str(os.getenv("NAME", "World")))
+   ```
+
+1. Build the image according to the `Dockerfile`:
+
+   ```console
+   $ # Build an image from the Dockerile in current directory and tag it <image-tag-name>
+   $ docker build -t <image-tag-name> .
+   ```
+   
+1. Finally, you can run the image by its tag name:
+
+   ```console
+   $ docker run <image-tag-name>
+   ```
+
+
+### Via container ###
+
+
+
+### Reference ###
+
+- [Docker Tutorial: Get Going From Scratch](https://stackify.com/docker-tutorial/)
+- [Getting Started with Docker](https://scotch.io/tutorials/getting-started-with-docker)
 
 
 ## Reference ##
