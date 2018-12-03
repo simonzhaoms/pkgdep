@@ -32,7 +32,8 @@ Docker container can be used in the scenarios:
 There are 2 versions: Community Edition (CE) and Enterprise Edition
 (EE).  See [Get Docker CE for
 Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/) for
-more detailed installation of Docker CE.
+more detailed installation of Docker CE.  **NOTE** There is no apt
+source for Ubuntu 18.10.
 
 ```bash
 sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
@@ -163,7 +164,7 @@ There are 2 ways:
 - Write a `Dockerfile`.  Describe all the commands used to create the
   image in the `Dockerfile`.
 - Save a container into an image.  Setup the environment in a
-  container, then export it into an image.
+  container, then commit it into an image.
 
 
 ### Via `Dockerfile` ###
@@ -212,6 +213,7 @@ There are 2 ways:
 
    ```console
    $ # Build an image from the Dockerile in current directory and tag it <image-tag-name>
+   $ # Usually a tag name is like author/repo:tag
    $ docker build -t <image-tag-name> .
    ```
    
@@ -224,12 +226,44 @@ There are 2 ways:
 
 ### Via container ###
 
+1. Run a container.  Usually we need a base image to start, such as
+   `ubuntu`:
+
+   ```console
+   $ # --name gives a name to the container in order to refer to it afterwards
+   $ # -it    enables interaction to get into the container
+   $ # Usually a image tag name is like author/repo:tag, so when we say:
+   $ #     docker run ubuntu
+   $ # we refer to ubuntu:latest
+   $ docker run --name mlhub -it ubuntu:latest
+   ```
+
+1. Setup the environment inside the container.
+
+   ```console
+   root@xxx $ pip3 install mlhub
+   ```
+   
+1. Commit the changes in the container into an image.
+
+   ```
+   $ # -m    gives a commit message
+   $ # -a    gives the author of the image
+   $ # mlhub is the container name.
+   $ # mlhubber/mlhub:v2.0 is the tag name for the newly created image.
+   $ docker commit -m "Added mlhub" -a "mlhubber" mlhub mlhubber/mlhub:v2.0
+   ```
 
 
 ### Reference ###
 
 - [Docker Tutorial: Get Going From Scratch](https://stackify.com/docker-tutorial/)
 - [Getting Started with Docker](https://scotch.io/tutorials/getting-started-with-docker)
+
+
+## Make a base image ##
+
+
 
 
 ## Reference ##
