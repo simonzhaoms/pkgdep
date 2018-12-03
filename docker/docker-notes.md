@@ -18,6 +18,14 @@ Docker container can be used in the scenarios:
   on several containers without interfere with each other.
 
 
+* [Installation on Ubuntu](#installation-on-ubuntu)
+* [Docker commands](#docker-commands)
+* [Make a Docker image](#make-a-docker-image)
+  + [Via `Dockerfile`](#via-dockerfile)
+  + [Via container](#via-container)
+* [Reference](#reference)
+
+
 ## Installation on Ubuntu ##
 
 There are 2 versions: Community Edition (CE) and Enterprise Edition
@@ -169,10 +177,10 @@ There are 2 ways:
    #     from ubuntu
    # You can also give a specific tag verson, such as:
    #     FROM ubuntu:bionic-20181112
-   # You can check available tag version from https://hub.docker.com/
-   # For ubuntu, see https://hub.docker.com/_/ubuntu/
+   # You can check available tag version of ubuntu at https://hub.docker.com/_/ubuntu/
+   # You can also search for other available images at https://hub.docker.com
+   # The size of the container run from the latest ubuntu image is about 86.2MB.
    # In Dockerfile, comments are prefixed by '#'.
-   # The size of the container created from the latest ubuntu image is about 86.2MB.
    FROM ubuntu
 
    # Run the commands.  Here we install python3.
