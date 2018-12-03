@@ -32,6 +32,13 @@ Docker container can be used in the scenarios:
   + [Remove unnecessary files](#remove-unnecessary-files)
   + [Use minimization tools](#use-minimization-tools)
 * [Available base image](#available-base-image)
+  + [iron](#iron)
+  + [phusion](#phusion)
+  + [minideb](#minideb)
+  + [miniconda3](#miniconda3)
+  + [tensorflow](#tensorflow)
+  + [R images](#r-images)
+* [Be careful](#be-careful)
 * [Reference](#reference)
 
 
@@ -450,6 +457,9 @@ Here is some tips:
 - Install package by `apt-get install --no-install-recommends` to
   avoid installing unnecessary recommended packages.
 - Remove Conda caches by `conda clean -y -a`
+- Make `apt-get update` work together with `apt-get install`, such as
+  `apt-get update && apt-get install xxx`, to make a single layer
+  inside the image.
 
 
 #### Reference ####
@@ -466,8 +476,61 @@ Here is some tips:
 ## Available base image ##
 
 
+### iron ###
+
+- [Iron](https://hub.docker.com/u/iron/)
+- [Uber tiny Docker images for all the things](https://github.com/iron-io/dockers)
+- [Microcontainers -- Tiny, Portable Docker Containers](https://blog.iron.io/microcontainers-tiny-portable-containers/)
 
 
+### phusion ###
+
+- [phusion/baseimage](https://hub.docker.com/r/phusion/baseimage/)
+- [A minimal Ubuntu base image modified for Docker-friendliness](https://github.com/phusion/baseimage-docker)
+- [Baseimage-docker, fat containers and "treating containers as VMs"](https://blog.phusion.nl/2015/01/20/baseimage-docker-fat-containers-treating-containers-vms/)
+
+
+### minideb ###
+
+- [bitnami/minideb](https://hub.docker.com/r/bitnami/minideb/)
+- [A small image based on Debian designed for use in containers](https://github.com/bitnami/minideb)
+- [Minideb: A Minimalist, Debian-Based Docker Image](https://dzone.com/articles/minideb-a-minimalist-debian-based-docker-image)
+
+
+### miniconda3 ###
+
+It is about 180MB and conda is located in `/opt/conda` inside the
+image.
+
+- [continuumio/miniconda3](https://hub.docker.com/r/continuumio/miniconda3/)
+- [Conda Environments with Docker](https://medium.com/@chadlagore/conda-environments-with-docker-82cdc9d25754)
+
+
+### tensorflow ###
+
+It is about 2GB for GPU version, and 500MB for non-GPU.
+
+- [tensorflow/tensorflow](https://hub.docker.com/r/tensorflow/tensorflow/)
+
+
+### R images ###
+
+- [Opening Reproducible Research](https://o2r.info/)
+- [Generating Dockerfiles for reproducible research with R](http://o2r.info/containerit/articles/containerit.html)
+- [Rocker](https://github.com/rocker-org/rocker) and [Rocker -- Docker Hub](https://hub.docker.com/u/rocker/)
+
+
+## Be careful ##
+
+- Do not `apt-get upgrade` inside an image if you want your work
+  reproducible
+- Specify the tag version of the parent image, such as `FROM
+  ubuntu:18.04` instead of `FROM ubuntu`
+
+
+### Reference ###
+
+- [9 Common Dockerfile Mistakes](https://runnable.com/blog/9-common-dockerfile-mistakes)
 
 
 ## Reference ##
