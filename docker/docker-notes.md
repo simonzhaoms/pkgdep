@@ -27,6 +27,11 @@ Docker container can be used in the scenarios:
 * [Make a base image](#make-a-base-image)
   + [Make a minimal OS image](#make-a-minimal-os-image)
   + [Use `FROM scratch`](#use-from-scratch)
+* [Reduce image size](#reduce-image-size)
+  + [Multi-stage builds](#Multi-stage-builds)
+  + [Remove unnecessary files](#remove-unnecessary-files)
+  + [Use minimization tools](#use-minimization-tools)
+* [Available base image](#available-base-image)
 * [Reference](#reference)
 
 
@@ -372,6 +377,97 @@ frequently.
 - [Create a base image](https://docs.docker.com/develop/develop-images/baseimages/)
 - [Creating a Docker Image from Scratch](https://linuxhint.com/create_docker_image_from_scratch/)
 - [Build a Base Image from Scratch](https://docker-k8s-lab.readthedocs.io/en/latest/docker/docker-base-image.html)
+
+
+## Reduce image size ##
+
+The basic principle is removing unnecessary files and dependencies.
+For example, to make the above C++ 'Hello' image, you don't need GCC
+to be included in the image, though GCC is required to build the
+source code into the executable.  However, if you put the source code
+into the image instead of the executable, you have to install GCC
+inside the image to compile the code, and GCC will contribute quite an
+amount to the size of the final image.
+
+
+### Multi-stage builds ###
+
+Multi-stage builds can be used to optimize the size of an image:
+
+```dockerfile
+# python:3 includes GCC and other libraries to build some Python package
+FROM python:3 as python-base
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# python:3-alpine only includes Python related files
+FROM python:3-alpine
+# pip will put all downloaded and compiled packages into .cache, thus we 
+# only need .cache instead of GCC and other redundant libraries to be 
+# included into our final image.
+COPY --from=python-base /root/.cache /root/.cache
+COPY --from=python-base requirements.txt .
+RUN pip install -r requirements.txt && rm -rf /root/.cache
+```
+
+Here we use 2-stage builds.  One is used for compiling the packages
+needed.  The other is used for installing and packaging the results
+into our final image.
+
+
+#### Reference ####
+
+- [Lighter Python images using multi-stage `Dockerfile`](https://lekum.org/post/multistage-dockerfile/)
+- [Use multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/)
+- [Advanced multi-stage build patterns](https://medium.com/@tonistiigi/advanced-multi-stage-build-patterns-6f741b852fae)
+- [Docker build patterns](https://matthiasnoback.nl/2017/04/docker-build-patterns/)
+
+
+### Remove unnecessary files ###
+
+Here is some tips:
+
+- Remove cached `.deb` package by `sudo apt-get clean`.
+- Remove unused dependencies by `sudo apt-get autoremove`.
+- Remove logs in `/var/log` and caches in `/var/cache`.
+- Export image:
+
+  ```bash
+  docker export <container> | docker import - <image>
+  ```
+
+  instead of committing image:
+
+  ```bash
+  docker commit -m "Remove unnecessary files to make final image" <container> <image>
+  ```
+
+  As mentioned previously, every commit will add a layer into the
+  image, so all removed unnecessary files are still in the history of
+  the image, which will make the final image bigger instead of
+  smaller.
+  
+- Install package by `apt-get install --no-install-recommends` to
+  avoid installing unnecessary recommended packages.
+- Remove Conda caches by `conda clean -y -a`
+
+
+#### Reference ####
+
+- [Squeeze disk space on a Debian system](https://ownyourbits.com/2017/02/18/squeeze-disk-space-on-a-debian-system/)
+- [Tips to Reduce Docker Image Sizes](https://hackernoon.com/tips-to-reduce-docker-image-sizes-876095da3b34)
+
+
+### Use minimization tools ###
+
+- [Skinnywhale helps you make smaller (as in megabytes) Docker containers](https://github.com/djosephsen/skinnywhale)
+
+
+## Available base image ##
+
+
+
+
 
 
 ## Reference ##
