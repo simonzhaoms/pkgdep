@@ -24,6 +24,9 @@ Docker container can be used in the scenarios:
 * [Make a Docker image](#make-a-docker-image)
   + [Via `Dockerfile`](#via-dockerfile)
   + [Via container](#via-container)
+* [Make a base image](#make-a-base-image)
+  + [Make a minimal OS image](#make-a-minimal-os-image)
+  + [Use `FROM scratch`](#use-from-scratch)
 * [Reference](#reference)
 
 
@@ -263,7 +266,112 @@ There are 2 ways:
 
 ## Make a base image ##
 
+Usually we make an Docker image from a **parent image** (such as `FROM
+ubuntu`).  If we want to make our own parent image which is called
+**base image**, there are 2 ways:
+- Make a minimal OS full image 
+- Use `FROM scratch`
 
+
+### Make a minimal OS image ###
+
+Here we use `debootstrap` to make a minimal Debian image.  **NOTE**:
+The system generated in this way still needs extra tuning in order to
+function as a full OS system.
+
+```console
+$ # Install debootstrap, a tool for making a minimal Debian system
+$ sudo apt install debootstrap
+
+$ # Make a bionic system into the directory minisys.
+$ # The size of it will be about 307MB
+$ sudo debootstrap bionic minisys
+
+$ # Package minisys into a Docker image called 'bionic'
+$ # The generated Docker image is around 289MB
+$ sudo tar -C minisys -c . | docker import - bionic
+```
+
+
+#### Reference ####
+
+- [Create a base image](https://docs.docker.com/develop/develop-images/baseimages/)
+- [moby/contrib/mkimage/debootstrap](https://github.com/moby/moby/blob/master/contrib/mkimage/debootstrap)
+- [Installing Debian GNU/Linux from a Unix/Linux System](https://www.debian.org/releases/jessie/amd64/apds03.html.en)
+
+
+### Use `FROM scratch` ###
+
+Here we use a C++ 'Hello' as an example.  Save the following code as
+`hello.sh`.
+
+```bash
+#!/bin/bash -
+
+# Generate cpp source code
+cat <<EOF > hello.cpp
+#include<iostream>
+int main() {
+  std::cout << "Hello!" << std::endl;
+  return 0;
+}
+EOF
+
+# Compile and generate static executable file
+g++ -o hello -static hello.cpp
+
+# Generate Dockerfile
+cat <<EOF > Dockerfile
+FROM scratch    # Use scratch to make image
+ADD hello /     # Put the executable generated previously into the dir / of the iamge
+CMD ["/hello"]  # Set the executable as the default command invoked when running the image
+EOF
+
+# Make the image according to the Dockerfile above
+docker build -t hello .
+
+# Remove intermediate files
+rm hello hello.cpp Dockerfile
+```
+
+Then run the script `hello.sh`:
+
+```console
+$ bash hello.sh 
+Sending build context to Docker daemon  2.255MB
+Step 1/3 : FROM scratch
+ ---> 
+Step 2/3 : ADD hello /
+ ---> 6844b59b14fb
+Step 3/3 : CMD ["/hello"]
+ ---> Running in ce8506ded932
+Removing intermediate container ce8506ded932
+ ---> 362d7a6980b5
+Successfully built 362d7a6980b5
+Successfully tagged hello:latest
+$ docker history hello
+IMAGE         CREATED      CREATED BY                         SIZE    COMMENT
+362d7a6980b5  2 hours ago  /bin/sh -c #(nop)  CMD ["/hello"]  0B
+6844b59b14fb  2 hours ago  /bin/sh -c #(nop) ADD file:968...  2.25MB
+```
+
+We can see that the image is built layer by layer.  That is the result
+of a `Dockerfile` directive is a layer in the image, which is a point
+in the history of the image, such as `6844b59b14fb` of the above
+output, and is an intermediate image as well.  Docker will cache the
+intermediate image, thus when you change the order of directives in
+the `Dockerfile`, Docker will re-use them if possible.  Therefore,
+you'd better place at the bottom the directives that will change
+frequently.
+
+
+#### Reference ####
+
+- [Optimizing Your `Dockerfile`](https://medium.com/@esotericmeans/optimizing-your-dockerfile-dc4b7b527756)
+- [Best practices for writing `Dockerfile`s](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+- [Create a base image](https://docs.docker.com/develop/develop-images/baseimages/)
+- [Creating a Docker Image from Scratch](https://linuxhint.com/create_docker_image_from_scratch/)
+- [Build a Base Image from Scratch](https://docker-k8s-lab.readthedocs.io/en/latest/docker/docker-base-image.html)
 
 
 ## Reference ##
