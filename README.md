@@ -5,6 +5,8 @@ Notes on package dependency
 
 * [Docker](#docker/docker-notes.md)
 * [Snap](#snap/snap-notes.md)
+* [Nix](#nix/nix-notes.md)
+
 
 ## Comparisons ##
 
