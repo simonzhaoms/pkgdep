@@ -7,6 +7,7 @@ Notes on package dependency
 * [Snap](snap/snap-notes.md)
 * [Nix](nix/nix-notes.md)
 * [AppImage](appimage/appimage-notes.md)
+* [Flatpak](flatpak/flatpak-notes.md)
 
 
 ## Comparisons ##
