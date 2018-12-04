@@ -25,7 +25,10 @@ installation.
 `pip install` and `conda install` can be used interchangeably, but use
 `conda install` would be better.  Because `conda` package will not
 only specify Python depandencies, but also describe system
-dependencies to be installed if any.
+dependencies to be installed if any.  However, some packages can only
+be installed by `pip install`, because no `conda` version is
+available.
+
 
 ## Content ##
 
