@@ -220,3 +220,9 @@ Snap package for MLHUB, at least some hacks needed.
 + [Bundle RStudio Desktop for Linux as a Flatpak, Snap, or AppImage](https://github.com/rstudio/rstudio/issues/3079)
   - A discussion on putting RStudio into one of the packages.
 
++ [Create your own Ubuntu Core image](https://tutorials.ubuntu.com/tutorial/create-your-own-core-image)
+
+
+## Reference ##
+
++ [Snap Documentation](https://docs.snapcraft.io/snap-documentation/3781)

@@ -11,6 +11,12 @@ To work with Nix, applications should be packaged in the Nix format.
 There is now a Nix repo where many popular application are packaged,
 such as Python.
 
+The [Guix System Distribution
+(GuixSD)](https://www.gnu.org/software/guix/) comes with [GNU Guix
+package
+manager](https://www.gnu.org/software/guix/manual/html_node/Package-Management.html),
+which is similar to Nix.
+
 
 ## Make a Nix package ##
 

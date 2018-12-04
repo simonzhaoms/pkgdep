@@ -17,6 +17,11 @@ Docker container can be used in the scenarios:
   Docker, all these can be packed into a single Docker image, and run
   on several containers without interfere with each other.
 
+[Singularity](https://singularity.lbl.gov/) is a container similar to
+Docker but for HPC.  See [User
+Guide](https://www.sylabs.io/guides/3.0/user-guide/).
+
+
 ## Contents ##
 
 * [Installation on Ubuntu](#installation-on-ubuntu)
