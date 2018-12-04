@@ -8,6 +8,7 @@ Notes on package dependency
 * [Nix](nix/nix-notes.md)
 * [AppImage](appimage/appimage-notes.md)
 * [Flatpak](flatpak/flatpak-notes.md)
+* [Anaconda](conda/conda-notes.md)
 
 
 ## Comparisons ##
