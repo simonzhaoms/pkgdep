@@ -45,7 +45,6 @@ Guide](https://www.sylabs.io/guides/3.0/user-guide/).
   + [R images](#r-images)
 * [About volume](#about-volume)
 * [Be careful](#be-careful)
-* [Reference](#reference)
 
 
 ## Installation on Ubuntu ##
