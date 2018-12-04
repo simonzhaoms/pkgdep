@@ -28,7 +28,8 @@ Here is a list of available comparisons found:
 ## Unsorted ##
 
 + [If AppImage, Flatpak and Snap don’t cut it, you can roll your own](https://medium.com/genymobile/if-appimage-flatpak-and-snap-dont-cut-it-you-can-roll-your-own-6175177d6eef)
-  - A tool for analyzing dependencies for executable
+  - [copydeps](https://github.com/Genymobile/copydeps) -- A tool for
+    analyzing dependencies for executable.
 
 
 
