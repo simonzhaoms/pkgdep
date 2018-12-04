@@ -201,9 +201,7 @@ Snap package for MLHUB, at least some hacks needed.
 
 + [Python apps](https://docs.snapcraft.io/python-apps/6741)
   - A pre-defined plugin which can be used for create a python
-    package.  Its source code can be found at [snapcraft python plugin
-    --
-    launchpad](https://git.launchpad.net/snapcraft/tree/snapcraft/plugins/python.py).
+    package.  Its source code can be found at [snapcraft python plugin -- launchpad](https://git.launchpad.net/snapcraft/tree/snapcraft/plugins/python.py).
     The official Python plugin of snapcraft is a subclass of
     [`BasePlugin`](https://git.launchpad.net/snapcraft/tree/snapcraft/_baseplugin.py)
     and it only supports pip, see
