@@ -106,6 +106,11 @@ $ # Install pillow inside the current virtual environment
 $ conda install pillow
 $ # Install pillow inside the virtual environment <envs-name>
 $ conda install -n <envs-name> pillow
+$ # Channels are repos holding packages.  The same package can be found in different 
+$ # channels.  The default channel is https://repo.anaconda.com.
+$ # If a package is not found in the default channel, you can search the package on 
+$ # https://anaconda.org/ and then install it by specifying the channel where it is.
+$ conda install -c <channel-name> pillow
 
 $ conda search pillow  # Search for pillow in the conda repo
 $ conda list           # List installed packages in current virtual environment
