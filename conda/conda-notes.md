@@ -3,9 +3,8 @@
 [Anaconda](https://docs.anaconda.com/anaconda/) is:
 
 - A package manager.  It can search, manage and install Python
-  packages.  It add supports to R package management as well ([Using R
-  language with
-  Anaconda](https://docs.anaconda.com/anaconda/user-guide/tasks/use-r-language/)).
+  packages.  It add supports to R package management as well
+  ([Using R language with Anaconda](https://docs.anaconda.com/anaconda/user-guide/tasks/use-r-language/)).
 
 - A environment manager.  It can create a virtual environment
   independent from that of the system in order to manage and test
@@ -127,6 +126,8 @@ $ conda create --name <new-envs> --clone <exist-envs>
 
 $ source activate <envs-name>  # Switch into virtual environment <envs-name>
 $ # Export the config of <envs-name> into environment.yml
+$ # You can also run withuot 'source activate <envs-name>' by:
+$ #     conda env export -n <envs-name> > environment.yml
 $ conda env export > environment.yml
 $ # Create a new virtual environment as same as described in environment.yml
 $ conda env create -f environment.yml
