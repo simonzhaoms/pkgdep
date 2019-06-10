@@ -3,8 +3,9 @@
 [Anaconda](https://docs.anaconda.com/anaconda/) is:
 
 - A package manager.  It can search, manage and install Python
-  packages.  It add supports to R package management as well
-  ([Using R language with Anaconda](https://docs.anaconda.com/anaconda/user-guide/tasks/use-r-language/)).
+  packages.  It add supports to R package management as well (See
+  [Using R language with
+  Anaconda](https://docs.anaconda.com/anaconda/user-guide/tasks/use-r-language/)).
 
 - A environment manager.  It can create a virtual environment
   independent from that of the system in order to manage and test
@@ -16,7 +17,7 @@ All the operations are carried out by the command line tool --
 
 There are over 200 Python packages installed by default during the
 installation of Anaconda.  The whole Anaconda directory will occupy
-3GB.  A much smaller alternative is
+3.4GB.  A much smaller alternative is
 [Miniconda](https://conda.io/miniconda.html).  Miniconda only contains
 those packages make `conda` work, and is about 300MB after
 installation.
@@ -48,6 +49,19 @@ virtual environment with a different version of Python from the Python
 runing `conda`.  If you are not sure, feel free to choose Anaconda
 with Python 3.
 
+See [Installation](https://docs.anaconda.com/anaconda/install/) for
+more details on different OS systems.  On Linux, such as Ubuntu, see
+[Installing on
+Linux](https://docs.anaconda.com/anaconda/install/linux/) for more
+details:
+
+1. Download the installer (for example,
+   `Anaconda3-2019.03-Linux-x86_64.sh`) from [Anaconda
+   Distribution](https://www.anaconda.com/distribution/)
+1. Execute the installer.  For example
+   ```consolecode
+   bash ~/Downloads/Anaconda3-2019.03-Linux-x86_64.sh
+   ```
 
 ## Structure of Anaconda installation directory ##
 
@@ -62,15 +76,16 @@ and will include these subdirectories:
 
 + `envs`
   - This is where all virtual environments are located.  In a `conda`
-    virtual environment, `CONDA\_PREFIX` denotes the root dir of
+    virtual environment, `CONDA_PREFIX` denotes the root dir of
     current virtual environment, so if you are in a virtual
-    environment called `test`, then `cd $CONDA\_PREFIX` will jump to
+    environment called `test`, then `cd $CONDA_PREFIX` will jump to
     `~/anaconda/envs/test`.
 
 + `bin`, `include`, `lib`, `share`
-  - The default environment directories of Anaconda, that is if
-    creating a new virtual environment, it will also include these 4
-    dirs, but with different versions.
+  - The default environment directories of Anaconda, that is the
+    `base` conda environment.  If you create another new virtual
+    environment, it will also include these 4 dirs, but may be with
+    different versions of the dependencies.
 
 
 ## Quick start ##
@@ -81,8 +96,8 @@ $ conda update conda  # Update conda
 
 $ # Check available existing virtual environments.  There is a default one called base
 $ conda info --envs
-$ source activate <envs-name>      # Switch to the virtual environment <envs-name>
-(<envs-name>) $ source deactivate  # Quit virtual environment <envs-name>
+$ conda activate <envs-name>      # Switch to the virtual environment <envs-name>
+(<envs-name>) $ conda deactivate  # Quit virtual environment <envs-name>
 
 $ # Create a virtual environment as same as conda system environment
 $ conda create --name <envs-name>
@@ -124,9 +139,9 @@ $ conda list -n <envs-name> pillow  # List the pillow package in <envs-name>
 $ # Create a <new-envs> as same as <exist-envs>
 $ conda create --name <new-envs> --clone <exist-envs>
 
-$ source activate <envs-name>  # Switch into virtual environment <envs-name>
+$ conda activate <envs-name>  # Switch into virtual environment <envs-name>
 $ # Export the config of <envs-name> into environment.yml
-$ # You can also run withuot 'source activate <envs-name>' by:
+$ # You can also run withuot conda activate <envs-name>' by:
 $ #     conda env export -n <envs-name> > environment.yml
 $ conda env export > environment.yml
 $ # Create a new virtual environment as same as described in environment.yml
@@ -156,11 +171,11 @@ $ conda install --revisions n
 
 ```console
 $ conda create -n <test-envs> <packages-needed>  # Create VE, and install pkgs
-$ source activate <test-envs>  # Swith into the new VE
+$ conda activate <test-envs>  # Swith into the new VE
 $ cd /path/to/source/dir  # Go to the dir you will work on
 $ python setup.py install  # Install the package you developed into the VE
 $ python setup.py develop  # Or install with symbolic link
-$ source deactivate  # Finish testing, quit VE
+$ conda deactivate  # Finish testing, quit VE
 $ conda remove -n <test-envs> --all  # Remove unused VEs
 ```
 
