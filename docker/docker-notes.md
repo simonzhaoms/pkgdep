@@ -56,11 +56,10 @@ more detailed installation of Docker CE.  **NOTE** There is no apt
 source for Ubuntu 18.10.
 
 ```bash
-sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt-get update
-sudo apt-get install docker-ce  # install the latest version
+sudo apt-get install -y docker-ce  # install the latest version
 
 # add current user to group docker in order not to sudo when using docker command
 sudo usermod -aG docker $USER
