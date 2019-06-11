@@ -52,8 +52,7 @@ Guide](https://www.sylabs.io/guides/3.0/user-guide/).
 There are 2 versions: Community Edition (CE) and Enterprise Edition
 (EE).  See [Get Docker CE for
 Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/) for
-more detailed installation of Docker CE.  **NOTE** There is no apt
-source for Ubuntu 18.10.
+more detailed installation of Docker CE.
 
 ```bash
 sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
