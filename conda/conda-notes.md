@@ -27,14 +27,15 @@ installation.
 only specify Python depandencies, but also describe system
 dependencies to be installed if any.  However, some packages can only
 be installed by `pip install`, because no `conda` version is
-available.  **Note**: Anaconda will append its own `pip` in the
-`PATH`, which will shadow the system's `pip`.  But from Anaconda
-2019.03 on, it won't do that any more so that `pip` will be treated
-like other Python packages as an independent packages in every conda
-environment.  In other words, if you are in a conda environment, you
-can only use `pip install` when `pip` itself being installed in that
-very environment.  Thus it won't conflict with the system's `pip` any
-more.
+available.
+
+**Note**: Anaconda would append its own `pip` in the `PATH`, which
+will shadow the system's `pip`.  But from Anaconda 2019.03 on, it
+won't do that any more so `pip` will be treated like other Python
+packages as an independent package in every conda environment.  In
+other words, if you are in a conda environment, you can only use `pip
+install` when `pip` itself being installed in that very environment.
+Thus it won't conflict with the system's `pip` any more.
 
 
 ## Content ##
