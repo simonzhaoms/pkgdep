@@ -150,9 +150,11 @@ $ conda create --name <new-envs> --clone <exist-envs>
 $ conda activate <envs-name>  # Switch into virtual environment <envs-name>
 $ # Export the config of <envs-name> into environment.yml
 $ # You can also run withuot conda activate <envs-name>' by:
-$ #     conda env export -n <envs-name> > environment.yml
+$ #     $ conda env export -n <envs-name> > environment.yml
 $ conda env export > environment.yml
 $ # Create a new virtual environment as same as described in environment.yml
+$ # Or give a diffenrent name for the environment:
+$ #     $ conda env create -f environment.yml -n <new-name>
 $ conda env create -f environment.yml
 
 $ conda env remove -n <envs-name>  # Remove virtual environment <envs-name>
