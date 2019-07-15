@@ -104,30 +104,30 @@ $ conda update conda  # Update conda
 
 $ # Check available existing virtual environments.  There is a default one called base
 $ conda info --envs
-$ conda activate <envs-name>      # Switch to the virtual environment <envs-name>
-(<envs-name>) $ conda deactivate  # Quit virtual environment <envs-name>
+$ conda activate <env-name>      # Switch to the virtual environment <env-name>
+(<env-name>) $ conda deactivate  # Quit virtual environment <env-name>
 
 $ # Create a virtual environment as same as conda system environment
-$ conda create --name <envs-name>
+$ conda create --name <env-name>
 
 $ # Create a virtual environment but with Python 3.3
-$ conda create --name <envs-name> python=3.3
+$ conda create --name <env-name> python=3.3
 
 $ # Create a virtual environment as same as conda system environment,
 $ # with pillow and scipy installed.  It is equivalent to:
 $ # 
-$ #   # Create a virtual environment called <envs-name>
-$ #   conda create -n <envs-name>
+$ #   # Create a virtual environment called <env-name>
+$ #   conda create -n <env-name>
 $ # 
-$ #   # Install pillow and scipy inside <envs-name>, make sure scipy version 0.15.0
-$ #   conda install -n <envs-name> pillow scipy=0.15.0
+$ #   # Install pillow and scipy inside <env-name>, make sure scipy version 0.15.0
+$ #   conda install -n <env-name> pillow scipy=0.15.0
 $ #
-$ conda create --name <envs-name> pillow scipy=0.15.0
+$ conda create --name <env-name> pillow scipy=0.15.0
 
 $ # Install pillow inside the current virtual environment
 $ conda install pillow
-$ # Install pillow inside the virtual environment <envs-name>
-$ conda install -n <envs-name> pillow
+$ # Install pillow inside the virtual environment <env-name>
+$ conda install -n <env-name> pillow
 $ # Channels are repos holding packages.  The same package can be found in different 
 $ # channels.  The default channel is https://repo.anaconda.com.
 $ # If a package is not found in the default channel, you can search the package on 
@@ -136,8 +136,8 @@ $ conda install -c <channel-name> pillow
 
 $ conda search pillow  # Search for pillow in the conda repo
 $ conda list           # List installed packages in current virtual environment
-$ conda list -n <envs-name>  # List packages in virtual environment <envs-name>
-$ conda list -n <envs-name> pillow  # List the pillow package in <envs-name>
+$ conda list -n <env-name>  # List packages in virtual environment <env-name>
+$ conda list -n <env-name> pillow  # List the pillow package in <env-name>
 ```
 
 
@@ -147,17 +147,17 @@ $ conda list -n <envs-name> pillow  # List the pillow package in <envs-name>
 $ # Create a <new-envs> as same as <exist-envs>
 $ conda create --name <new-envs> --clone <exist-envs>
 
-$ conda activate <envs-name>  # Switch into virtual environment <envs-name>
-$ # Export the config of <envs-name> into environment.yml
-$ # You can also run withuot conda activate <envs-name>' by:
-$ #     $ conda env export -n <envs-name> > environment.yml
+$ conda activate <env-name>  # Switch into virtual environment <env-name>
+$ # Export the config of <env-name> into environment.yml
+$ # You can also run withuot conda activate <env-name>' by:
+$ #     $ conda env export -n <env-name> > environment.yml
 $ conda env export > environment.yml
 $ # Create a new virtual environment as same as described in environment.yml
 $ # Or give a diffenrent name for the environment:
-$ #     $ conda env create -f environment.yml -n <new-name>
+$ #     $ conda env create -f environment.yml -n <new-env-name>
 $ conda env create -f environment.yml
 
-$ conda env remove -n <envs-name>  # Remove virtual environment <envs-name>
+$ conda env remove -n <env-name>  # Remove virtual environment <env-name>
 
 $ conda list --revisions  # List the revision history of current virtual environment
 2018-11-08 03:08:33  (rev 0)
