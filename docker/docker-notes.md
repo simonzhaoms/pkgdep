@@ -55,18 +55,22 @@ Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/) for
 more detailed installation of Docker CE.
 
 ```bash
+# Update APT package index in case of new fresh install
+sudo apt-get update
+# Install necessary dependencies
 sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+# Add Docker's official GPG key
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# Set APT repo source
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt-get install -y docker-ce  # install the latest version
+# Install Docker community edition
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io  # install the latest version
 
-# add current user to group docker in order not to sudo when using docker command
+# add current user to group docker in order not to use sudo everytime when using docker command
 sudo usermod -aG docker $USER
 
-# configure to start docker on startup
-sudo systemctl enable docker  # disable by 'sudo systemctl disable docker'
-
-# Test if docker is installed properly
+# Test if docker is installed properly.
+# If not adding to docker group, prefix 'sudo' to the command below.
 docker run hello-world
 ```
 
