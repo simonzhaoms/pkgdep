@@ -177,6 +177,16 @@ $ # be added in the history as well.
 $ conda install --revisions n
 ```
 
+To set up an conda environment from pip's `requirements.txt`:
+
+```console
+$ conda create -n <env-name> pip
+$ conda activate <env-name>
+(env-name) $ pip install -r requirements.txt
+(env-name) $ conda deactivate
+```
+
+
 ## Common workflow of developing packages with `conda` ##
 
 ```console
