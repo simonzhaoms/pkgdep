@@ -58,7 +58,7 @@ more detailed installation of Docker CE.
 # Update APT package index in case of new fresh install
 sudo apt-get update
 # Install necessary dependencies
-sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 # Add Docker's official GPG key
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 # Set APT repo source
@@ -66,8 +66,9 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 # Install Docker community edition
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io  # install the latest version
 
-# add current user to group docker in order not to use sudo everytime when using docker command
+# Add current user to group docker in order not to use sudo everytime when using docker command
 sudo usermod -aG docker $USER
+newgrp docker  # Activate changes
 
 # Test if docker is installed properly.
 # If not adding to docker group, prefix 'sudo' to the command below.
