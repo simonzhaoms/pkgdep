@@ -44,6 +44,7 @@ Guide](https://www.sylabs.io/guides/3.0/user-guide/).
   + [tensorflow](#tensorflow)
   + [R images](#r-images)
 * [About volume](#about-volume)
+* [Compose](#compose)
 * [Be careful](#be-careful)
 
 
@@ -564,7 +565,9 @@ which can be solved by using volume.  The usage of Volume are:
   docker run -v /path/to/a/dir/of/container <image>
   ```
 
-  The directory `H` will be located in `/var/lib/docker/volumes`.
+  The automatically generated volume directory will be located in
+  `/var/lib/docker/volumes` on the host and its mapped directory in
+  the container will be `/path/to/a/dir/of/container`.
 
 - Map an existing volume on the host under `/var/lib/docker/volumes`
   to a directory on the container:
@@ -934,6 +937,30 @@ root@3631906e5e3b:/home/data# ls
 ### Reference ###
 
 - [9 Common Dockerfile Mistakes](https://runnable.com/blog/9-common-dockerfile-mistakes)
+
+
+## Compose ##
+
+[Docker Compose](https://docs.docker.com/compose/) is a tool for
+defining and running multi-container Docker applications.  In other
+words, for a multi-container application, without Compose, you have to
+manually build Docker images and set up those multiple containers.
+But with Compose, you define those steps in a YAML configuration file,
+then create and start all the services from configuration file with a
+single command `docker-compose up`.  See [Get started with Docker
+Compose](https://docs.docker.com/compose/gettingstarted/).
+
+### Installation ###
+
+```bash
+# Use docker-compose binary directly
+sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+# Or install by pip
+pip install docker-compose
+```
 
 
 ## Reference ##
