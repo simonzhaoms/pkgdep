@@ -1,29 +1,55 @@
 # Docker notes #
 
-- **Docker** is a platform for developers and sysadmins to develop,
-  deploy, and run applications with containers.
-- An **image** is an executable package that includes everything
-  needed to run an application--the code, a runtime, libraries,
-  environment variables, and configuration files.
-- A **container** is a runtime instance of an image--what the image
-  becomes in memory when executed (that is, an image with state, or a
-  user process).  It is a lightweight virtual machine.
+See [Docker overview](https://docs.docker.com/get-started/overview/)
+and [Docker Engine overview](https://docs.docker.com/engine/).
+* **Docker**
+  + is an open platform for developers and sysadmins to develop,
+    deploy, run, share and deliver applications with containers that
+    are lightweight environments isolated from the host and contain
+    everything needed to run the applications.
+  + Docker uses a client-server arthitecutre:
+    - **The Docker daemon**
+      * a long-running daemon process (`dockerd`) listens for Docker
+        API requests and manages Docker objects such as images,
+        containers.  It can also communicate with other daemons to
+        manage Docker services.
+    - **The Docker client**
+      * a CLI client (`docker`) sends requests to the Docker daemon
+        via [**Docker API**](https://docs.docker.com/engine/api/).  It
+        can communicate with more than one daemon.
+  + It benefits CI/CD workflows.
+* [**Docker Desktop**](https://docs.docker.com/desktop/)
+  + is a bundled application that includes the Docker daemon, the
+    Docker client, Docker Compose, Docker Content Trust, Kubernetes,
+    and Credential Helper.
+* **Docker image**
+  + is a template (such as Dockerfile) with instructions for creating
+    a Docker container.
+* **Docker container**
+  + is a runnable instance of an Docker image -- what the image
+    becomes in memory when executed (that is, an image with state, or
+    a user process).  It runs as a sandboxed process like a
+    lightweight virtual machine.
 
-Docker container can be used in the scenarios:
+Docker containers can be used in the scenarios:
 
 - You want to test your code.  Take Python application as example.
   You have to make sure you have installed the right Python version,
   all dependent Python packages, as well as system dependencies.  With
-  Docker, all these can be packed into a single Docker image, and run
-  on several containers without interfere with each other.
+  Docker, all these can be packed into a single Docker image like a
+  virtual machine on a host, and run on several containers without
+  affecting the host.
 
-[Singularity](https://singularity.lbl.gov/) is a container similar to
-Docker but for HPC.  See [User
-Guide](https://www.sylabs.io/guides/3.0/user-guide/).
+[Apptainer](https://apptainer.org/)(formerly
+[Singularity](https://singularity.lbl.gov/)) is a container platform
+similar to Docker but for HPC.  See
+* [Apptainer Documentation](https://apptainer.org/documentation/)
+* [Sigularity User Guide](https://www.sylabs.io/guides/3.0/user-guide/)
 
 
 ## Contents ##
 
+* [Pros & Cons](#pros-cons)
 * [Installation on Ubuntu](#installation-on-ubuntu)
 * [Docker commands](#docker-commands)
 * [Make a Docker image](#make-a-docker-image)
@@ -47,34 +73,75 @@ Guide](https://www.sylabs.io/guides/3.0/user-guide/).
 * [Compose](#compose)
 * [Be careful](#be-careful)
 
+## Pros & Cons ##
+
+### Pros ###
+
+* Portable, a well-prepared Docker image of an application can be run
+  on any Docker-enabled machines, not only Linux.
+* Changes to the Docker image are recorded as layers, making it easier
+  for update and rollbacks.
+* Docker images can be shared and installed via public registry.
+* Application-centric, allowing packaging the environment with the
+  application.
+* Mature ecosystem.
+* Easy to use
+
+
+
+### Cons ###
+
+* Large image size
+* Security concerns
+* Kernel OS fragmentation
+
 
 ## Installation on Ubuntu ##
 
-There are 2 versions: Community Edition (CE) and Enterprise Edition
-(EE).  See [Get Docker CE for
-Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/) for
-more detailed installation of Docker CE.
 
-```bash
-# Update APT package index in case of new fresh install
-sudo apt-get update
-# Install necessary dependencies
-sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-# Add Docker's official GPG key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-# Set APT repo source
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-# Install Docker community edition
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io  # install the latest version
+There are 2 ways to install Docker (See [Install Docker on
+Linux](https://docs.docker.com/desktop/install/linux-install/)):
+1. Install Docker Server/Engine
 
-# Add current user to group docker in order not to use sudo everytime when using docker command
-sudo usermod -aG docker $USER
-newgrp docker  # Activate changes
+   ```bash
+   ARCH=$(dpkg --print-architecture)
+   CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
+   
+   APT_URL="https://download.docker.com/linux/ubuntu"
+   APT_LIST="/etc/apt/sources.list.d/docker.list"
+   GPG_PATH="/etc/apt/keyrings/docker.gpg"
+   GPG_URL="${APT_URL}/gpg"
+   
+   APT_ENTRY="deb [arch=${ARCH} signed-by=${GPG_PATH}] ${APT_URL} ${CODENAME} stable"
+   
+   # Update APT package index in case of new fresh install
+   sudo apt-get update
+   
+   # Install necessary dependencies
+   sudo apt-get install -y ca-certificates curl gnupg
+   
+   # Add Docker's official GPG key
+   sudo install -m 0755 -d /etc/apt/keyrings
+   curl -fsSL "${GPG_URL}" | sudo gpg --dearmor -o "${GPG_PATH}"
+   sudo chmod a+r "${GPG_PATH}"
+   
+   # Set Docker APT repo source
+   echo "${APT_ENTRY=}" | sudo tee "${APT_LIST}" > /dev/null
+   sudo apt-get update
+   
+   # Install the latest Docker community edition
+   sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+   
+   # Test if docker is installed properly.
+   sudo docker run hello-world
+   ```
 
-# Test if docker is installed properly.
-# If not adding to docker group, prefix 'sudo' to the command below.
-docker run hello-world
-```
+* Install Docker Desktop
+  + Docker Desktop is GA, but it is not recommended to have both
+    Docker Desktop and Docker Engine on the same machine.
+  + Unlike Docker Engine, Docker Desktop on Linux runs a VM instead of
+    directly on the machine.  More details can be found at [FAQs for
+    Linux](https://docs.docker.com/desktop/faqs/linuxfaqs/).
 
 
 ## Docker commands ##
@@ -965,5 +1032,5 @@ pip install docker-compose
 
 ## Reference ##
 
-- [Docker Docs](https://docs.docker.com)
-
+* [Docker Docs](https://docs.docker.com)
+    + [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
