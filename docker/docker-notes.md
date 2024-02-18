@@ -1,57 +1,60 @@
 # Docker notes #
 
-See [Docker overview](https://docs.docker.com/get-started/overview/)
-and [Docker Engine overview](https://docs.docker.com/engine/).
+See [Docker Engine overview](https://docs.docker.com/engine/).
 * **Docker**
-  + is an open platform for developers and sysadmins to develop,
-    deploy, run, share and deliver applications with containers that
-    are lightweight environments isolated from the host and contain
-    everything needed to run the applications.
-  + Docker uses a client-server arthitecutre:
+  + provides the tools to package and run an application in an
+    environment called a **container** that is isolated from the host
+    like a hypervisor-based virtual machine (such as VirtualBox) but
+    is lightweight.
+  + uses a client-server arthitecutre:
     - **The Docker daemon**
-      * a long-running daemon process (`dockerd`) listens for Docker
-        API requests and manages Docker objects such as images,
-        containers.  It can also communicate with other daemons to
-        manage Docker services.
+      * a long-running daemon process
+        ([`dockerd`](https://docs.docker.com/engine/reference/commandline/dockerd/))
+        listens for Docker API requests and manages Docker objects
+        such as images, containers, networks, and volumes.
+      * It can also communicate with other daemons to manage Docker
+        services.
     - **The Docker client**
-      * a CLI client (`docker`) sends requests to the Docker daemon
-        via [**Docker API**](https://docs.docker.com/engine/api/).  It
-        can communicate with more than one daemon.
-  + It benefits CI/CD workflows.
+      * a CLI client
+        ([`docker`](https://docs.docker.com/engine/reference/commandline/docker/))
+        sends commands (such as `docker pull`, `docker run`) to the
+        Docker daemon via [**Docker
+        API**](https://docs.docker.com/engine/api/).
+      * It can communicate with more than one daemon.
+* **Docker image**
+  + is a template (called
+    [**Dockerfile**](https://docs.docker.com/engine/reference/builder/))
+    with instructions for creating a Docker container.
+* **Docker container**
+  + is a runnable instance of an Docker image -- what the Docker image
+    becomes in memory when executed (that is, an image with state, or
+    a user process).
+  + runs as a sandboxed process containing everything needed to run
+    the application, so it can be started and stoped by using the
+    Docker API or CLI.
+* [**Docker Compose**](https://docs.docker.com/compose/)
+  + is a tool for defining and running containers in
+    [`compose.yaml`](https://docs.docker.com/compose/compose-file/).
+  + is typically helpful when running multi-container applications.
+    An application usually contains several parts, such as a frontend,
+    and a backend database, running in different containers.  Instead
+    of running one-by-one manually, Docker compose helps us define the
+    parts and run them all at once.
 * [**Docker Desktop**](https://docs.docker.com/desktop/)
   + is a bundled application that includes the Docker daemon, the
     Docker client, Docker Compose, Docker Content Trust, Kubernetes,
     and Credential Helper.
-* **Docker image**
-  + is a template (such as Dockerfile) with instructions for creating
-    a Docker container.
-* **Docker container**
-  + is a runnable instance of an Docker image -- what the image
-    becomes in memory when executed (that is, an image with state, or
-    a user process).  It runs as a sandboxed process like a
-    lightweight virtual machine.
-
-Docker containers can be used in the scenarios:
-
-- You want to test your code.  Take Python application as example.
-  You have to make sure you have installed the right Python version,
-  all dependent Python packages, as well as system dependencies.  With
-  Docker, all these can be packed into a single Docker image like a
-  virtual machine on a host, and run on several containers without
-  affecting the host.
-
-[Apptainer](https://apptainer.org/)(formerly
-[Singularity](https://singularity.lbl.gov/)) is a container platform
-similar to Docker but for HPC.  See
-* [Apptainer Documentation](https://apptainer.org/documentation/)
-* [Sigularity User Guide](https://www.sylabs.io/guides/3.0/user-guide/)
+* **Docker registry**
+  + is a place storing Docker images.
+* **Docker Hub** (https://hub.docker.com)
+  + is a public registry that Docker looks for images by default.
 
 
 ## Contents ##
 
-* [Pros & Cons](#pros-cons)
 * [Installation on Ubuntu](#installation-on-ubuntu)
-* [Docker commands](#docker-commands)
+* [Workflow](#workflow)
+* [Docker CLI commands](#docker-cli-commands)
 * [Make a Docker image](#make-a-docker-image)
   + [Via `Dockerfile`](#via-dockerfile)
   + [Via container](#via-container)
@@ -72,69 +75,56 @@ similar to Docker but for HPC.  See
 * [About volume](#about-volume)
 * [Compose](#compose)
 * [Be careful](#be-careful)
-
-## Pros & Cons ##
-
-### Pros ###
-
-* Portable, a well-prepared Docker image of an application can be run
-  on any Docker-enabled machines, not only Linux.
-* Changes to the Docker image are recorded as layers, making it easier
-  for update and rollbacks.
-* Docker images can be shared and installed via public registry.
-* Application-centric, allowing packaging the environment with the
-  application.
-* Mature ecosystem.
-* Easy to use
-
-
-
-### Cons ###
-
-* Large image size
-* Security concerns
-* Kernel OS fragmentation
+* [Misc](#misc)
 
 
 ## Installation on Ubuntu ##
 
+<details>
+<summary>Click to see more ...</summary>
 
 There are 2 ways to install Docker (See [Install Docker on
 Linux](https://docs.docker.com/desktop/install/linux-install/)):
-1. Install Docker Server/Engine
+* Install Docker Server/Engine
 
-   ```bash
-   ARCH=$(dpkg --print-architecture)
-   CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
-   
-   APT_URL="https://download.docker.com/linux/ubuntu"
-   APT_LIST="/etc/apt/sources.list.d/docker.list"
-   GPG_PATH="/etc/apt/keyrings/docker.gpg"
-   GPG_URL="${APT_URL}/gpg"
-   
-   APT_ENTRY="deb [arch=${ARCH} signed-by=${GPG_PATH}] ${APT_URL} ${CODENAME} stable"
-   
-   # Update APT package index in case of new fresh install
-   sudo apt-get update
-   
-   # Install necessary dependencies
-   sudo apt-get install -y ca-certificates curl gnupg
-   
-   # Add Docker's official GPG key
-   sudo install -m 0755 -d /etc/apt/keyrings
-   curl -fsSL "${GPG_URL}" | sudo gpg --dearmor -o "${GPG_PATH}"
-   sudo chmod a+r "${GPG_PATH}"
-   
-   # Set Docker APT repo source
-   echo "${APT_ENTRY=}" | sudo tee "${APT_LIST}" > /dev/null
-   sudo apt-get update
-   
-   # Install the latest Docker community edition
-   sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-   
-   # Test if docker is installed properly.
-   sudo docker run hello-world
-   ```
+  <details>
+  <summary>Click to see more ...</summary>
+
+  ```bash
+  ARCH=$(dpkg --print-architecture)
+  CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
+  
+  APT_URL="https://download.docker.com/linux/ubuntu"
+  APT_LIST="/etc/apt/sources.list.d/docker.list"
+  KEYRING_DIR="/etc/apt/keyrings"
+  GPG_PATH="${KEYRING_DIR}/docker.asc"
+  GPG_URL="${APT_URL}/gpg"
+  
+  APT_ENTRY="deb [arch=${ARCH} signed-by=${GPG_PATH}] ${APT_URL} ${CODENAME} stable"
+  
+  # Update APT package index in case of new fresh install
+  sudo apt-get update
+  
+  # Install necessary dependencies
+  sudo apt-get install -y ca-certificates curl
+  
+  # Add Docker's official GPG key
+  sudo install -m 0755 -d "${KEYRING_DIR}"
+  curl -fsSL "${GPG_URL}" | sudo gpg --dearmor -o "${GPG_PATH}"
+  sudo chmod a+r "${GPG_PATH}"
+  
+  # Set Docker APT repo source
+  echo "${APT_ENTRY}" | sudo tee "${APT_LIST}" > /dev/null
+  sudo apt-get update
+  
+  # Install the latest Docker community edition
+  sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  
+  # Test if docker is installed properly.
+  sudo docker run hello-world
+  ```
+
+  </details>
 
 * Install Docker Desktop
   + Docker Desktop is GA, but it is not recommended to have both
@@ -143,14 +133,278 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
     directly on the machine.  More details can be found at [FAQs for
     Linux](https://docs.docker.com/desktop/faqs/linuxfaqs/).
 
+</details>
 
-## Docker commands ##
+
+## Workflow ##
+
+<details>
+<summary>Click to see more ...</summary>
+
+1. Write a `Dockerfile` to define the environment containerizing your
+   application.
+1. Build the Docker image defined in the `Dockerfile` using [`docker
+   image
+   build`](https://docs.docker.com/engine/reference/commandline/image_build/)
+   (`docker build`).
+
+   ```bash
+   docker build -t <IMAGE-TAG> <DOCKERFILE-DIRECTORY>
+   ```
+
+   <details>
+   <summary>Click to see more ...</summary>
+
+   * To list available images, use [`docker image
+     ls`](https://docs.docker.com/engine/reference/commandline/image_ls/)
+     (`docker images`).
+   * To view the layers in the image, use [`docker image
+     history`](https://docs.docker.com/engine/reference/commandline/image_history/)
+     (`docker history`).
+     
+   </details>
+
+1. Create and run a container from the image to test your application
+   using [`docker container
+   run`](https://docs.docker.com/engine/reference/commandline/container_run/)
+   (`docker run`).
+
+   ```bash
+   # the `-d` option tells Docker to run the container in detached
+   # mode, that is, in background
+   docker run -d <IMAGE-TAG>
+   ```
+
+   <details>
+   <summary>Click to see more ...</summary>
+
+   * To list avaiable containers, use [`docker container
+     ls`](https://docs.docker.com/engine/reference/commandline/container_ls/)
+     (`docker ps`).
+   * To view the details of a container, use [`docker container
+     inspect`](https://docs.docker.com/engine/reference/commandline/container_inspect/)
+     with its ID.
+   * To view the container logs, use [`docker container
+     logs`](https://docs.docker.com/engine/reference/commandline/container_logs/)
+     (`docker logs`) with its ID.
+   * To mount a directory on the host to a directory in the container:
+
+     ```bash
+     # There is another new recommended option `--mount` for `-v`
+     docker run -v <HOST-PATH>:<CONTAINER-PATH> <IMAGE-TAG>
+     ```
+
+   * To run a command in a running container, use [`docker container
+     exec`](https://docs.docker.com/engine/reference/commandline/container_exec/)
+     (`docker exec`):
+
+     ```bash
+     docker exec <CONTAINER-ID> <COMMAND>
+     ```
+
+   * For multi-container applications, networking is required.
+
+     ```bash
+     # Create a network
+     docker network create <NEWTORK-NAME>
+
+     # Run a container and connnet it to the network using the
+     # `--network` option, thus the container will have its own IP.
+     # Meanwhile, give a domain name to the container using the
+     # `--network-alias` option for later reference by name instead
+     # of IP.
+     docker run --network <NETWORK-NAME> --network-alias <DOMAIN-NAME1> <IMAGE-TAG1>...
+
+     # Run another container and connect it to the network as well
+     docker run --network <NETWORK-NAME> -v <HOST-PATH>:<CONTAINER-PATH> <IMAGE-TAG2>...
+     ```
+
+     To simplify the running of multiple containers, Docker Compose
+     can be used to spin everything up by defining the operations in a
+     YAML file called `compose.yaml` and then running [`docker compose
+     up`](https://docs.docker.com/engine/reference/commandline/compose_up/),
+     so the two `docker run`s above can be configured as below:
+
+     ```yaml
+     services:
+       <DOMAIN-NAME1>:
+         # No <NETWORK-NAME> is required, since it will be created
+         # automatically when using Docker Compose
+         image: <IMAGE-TAG1>
+       <DOMAIN-NAME2>:
+         image: <IMAGE-TAG2>
+         volumes:
+           - <HOST-PATH>:<CONTAINER-PATH>
+     ```
+   </details>
+
+1. Update the image by modifying the `Dockerfile` and rebuild it.
+1. Stop and remove the container using [`docker container
+   stop`](https://docs.docker.com/engine/reference/commandline/container_stop/)
+   (`docker stop`) and [`docker container
+   rm`](https://docs.docker.com/engine/reference/commandline/container_rm/)
+   (`docker rm`).
+
+   ```bash
+   # The following 2 commands can be completed by the single command
+   # below:
+   #     docker rm -f <CONTAINER-ID>
+   docker stop <CONTAINER-ID>
+   docker rm <CONTAINER-ID>
+   ```
+
+1. Create and run a new container from the new image to test the
+   update.
+1. Share the image by pushing it to a Docker registry such as Docker
+   Hub, using [`docker image
+   push`](https://docs.docker.com/engine/reference/commandline/image_push/)
+   (`docker push`).
+
+</details>
+
+
+## Docker CLI commands ##
+
+<details>
+<summary>Click to see more ...</summary>
+
+### General info ###
+
+<details>
+<summary>Click to see more ...</summary>
 
 ```console
-$ docker            # print out docker usage, equivalent to: docker --help
-$ docker --version  # print out docker version
-$ docker version    # more detailed version
+$ # print out docker usage, equivalent to: sudo docker --help
+$ sudo docker
 
+Usage:  docker [OPTIONS] COMMAND
+
+A self-sufficient runtime for containers
+
+Common Commands:
+  run         Create and run a new container from an image
+  exec        Execute a command in a running container
+  ps          List containers
+  build       Build an image from a Dockerfile
+  pull        Download an image from a registry
+  push        Upload an image to a registry
+  images      List images
+  login       Log in to a registry
+  logout      Log out from a registry
+  search      Search Docker Hub for images
+  version     Show the Docker version information
+  info        Display system-wide information
+
+Management Commands:
+  builder     Manage builds
+  buildx*     Docker Buildx (Docker Inc., v0.11.2)
+  compose*    Docker Compose (Docker Inc., v2.21.0)
+  container   Manage containers
+  context     Manage contexts
+  image       Manage images
+  manifest    Manage Docker image manifests and manifest lists
+  network     Manage networks
+  plugin      Manage plugins
+  system      Manage Docker
+  trust       Manage trust on Docker images
+  volume      Manage volumes
+
+Swarm Commands:
+  swarm       Manage Swarm
+
+Commands:
+  attach      Attach local standard input, output, and error streams to a running container
+  commit      Create a new image from a container's changes
+  cp          Copy files/folders between a container and the local filesystem
+  create      Create a new container
+  diff        Inspect changes to files or directories on a container's filesystem
+  events      Get real time events from the server
+  export      Export a container's filesystem as a tar archive
+  history     Show the history of an image
+  import      Import the contents from a tarball to create a filesystem image
+  inspect     Return low-level information on Docker objects
+  kill        Kill one or more running containers
+  load        Load an image from a tar archive or STDIN
+  logs        Fetch the logs of a container
+  pause       Pause all processes within one or more containers
+  port        List port mappings or a specific mapping for the container
+  rename      Rename a container
+  restart     Restart one or more containers
+  rm          Remove one or more containers
+  rmi         Remove one or more images
+  save        Save one or more images to a tar archive (streamed to STDOUT by default)
+  start       Start one or more stopped containers
+  stats       Display a live stream of container(s) resource usage statistics
+  stop        Stop one or more running containers
+  tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+  top         Display the running processes of a container
+  unpause     Unpause all processes within one or more containers
+  update      Update configuration of one or more containers
+  wait        Block until one or more containers stop, then print their exit codes
+
+Global Options:
+      --config string      Location of client config files (default "/root/.docker")
+  -c, --context string     Name of the context to use to connect to the daemon (overrides
+                           DOCKER_HOST env var and default context set with "docker context use")
+  -D, --debug              Enable debug mode
+  -H, --host list          Daemon socket to connect to
+  -l, --log-level string   Set the logging level ("debug", "info", "warn", "error", "fatal")
+                           (default "info")
+      --tls                Use TLS; implied by --tlsverify
+      --tlscacert string   Trust certs signed only by this CA (default "/root/.docker/ca.pem")
+      --tlscert string     Path to TLS certificate file (default "/root/.docker/cert.pem")
+      --tlskey string      Path to TLS key file (default "/root/.docker/key.pem")
+      --tlsverify          Use TLS and verify the remote
+  -v, --version            Print version information and quit
+
+Run 'docker COMMAND --help' for more information on a command.
+
+For more help on how to use Docker, head to https://docs.docker.com/go/guides/
+
+$ # print out docker version
+$ sudo docker --version
+Docker version 24.0.7, build afdd53b
+
+$ # more detailed version
+$ sudo docker version
+Client: Docker Engine - Community
+ Version:           24.0.7
+ API version:       1.43
+ Go version:        go1.20.10
+ Git commit:        afdd53b
+ Built:             Thu Oct 26 09:07:41 2023
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          24.0.7
+  API version:      1.43 (minimum version 1.12)
+  Go version:       go1.20.10
+  Git commit:       311b9ff
+  Built:            Thu Oct 26 09:07:41 2023
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.6.25
+  GitCommit:        d8f198a4ed8892c764191ef7b3b06d8a2eeb5c7f
+ runc:
+  Version:          1.1.10
+  GitCommit:        v1.1.10-0-g18a0cb0
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+```
+
+</details>
+
+
+### Walkthrough ###
+
+<details>
+<summary>Click to see more ...</summary>
+
+```console
 $ # run image <xxx>, equivalent to:
 $ #     docker container run xxx
 $ # if you want to remove the container automatically after finishing running:
@@ -238,6 +492,8 @@ f3912fdb365b  hello-world  "/hello"  5 seconds ago  Exited (0) 3 seconds ago    
 5856302872b0  ubuntu       "bash"    2 hours ago    Exited (0) 6 minutes ago         naughty_ptolemy
 ```
 
+</details>
+
 
 ### Reference ###
 
@@ -248,6 +504,8 @@ f3912fdb365b  hello-world  "/hello"  5 seconds ago  Exited (0) 3 seconds ago    
 - [docker-curriculum.com](https://docker-curriculum.com/)
 - [R Docker tutorial](http://ropenscilabs.github.io/r-docker-tutorial/)
 
+</details>
+
 
 ## Make a Docker image ##
 
@@ -257,8 +515,13 @@ There are 2 ways:
 - Save a container into an image.  Setup the environment in a
   container, then commit it into an image.
 
+<details>
+<summary>Click to see more ...</summary>
 
 ### Via `Dockerfile` ###
+
+<details>
+<summary>Click to see more ...</summary>
 
 1. Write `Dockerfile`, mixed with commands and `Dockerfile`
    directives.  For example:
@@ -314,8 +577,13 @@ There are 2 ways:
    $ docker run <image-tag-name>
    ```
 
+</details>
+
 
 ### Via container ###
+
+<details>
+<summary>Click to see more ...</summary>
 
 1. Run a container.  Usually we need a base image to start, such as
    `ubuntu`:
@@ -345,11 +613,15 @@ There are 2 ways:
    $ docker commit -m "Added mlhub" -a "mlhubber" mlhub mlhubber/mlhub:v2.0
    ```
 
+</details>
+
 
 ### Reference ###
 
 - [Docker Tutorial: Get Going From Scratch](https://stackify.com/docker-tutorial/)
 - [Getting Started with Docker](https://scotch.io/tutorials/getting-started-with-docker)
+
+</details>
 
 
 ## Make a base image ##
@@ -360,8 +632,13 @@ ubuntu`).  If we want to make our own parent image which is called
 - Make a minimal OS full image 
 - Use `FROM scratch`
 
+<details>
+<summary>Click to see more ...</summary>
 
 ### Make a minimal OS image ###
+
+<details>
+<summary>Click to see more ...</summary>
 
 Here we use `debootstrap` to make a minimal Debian image.  **NOTE**:
 The system generated in this way still needs extra tuning in order to
@@ -387,8 +664,13 @@ $ sudo tar -C minisys -c . | docker import - bionic
 - [moby/contrib/mkimage/debootstrap](https://github.com/moby/moby/blob/master/contrib/mkimage/debootstrap)
 - [Installing Debian GNU/Linux from a Unix/Linux System](https://www.debian.org/releases/jessie/amd64/apds03.html.en)
 
+</details>
+
 
 ### Use `FROM scratch` ###
+
+<details>
+<summary>Click to see more ...</summary>
 
 Here we use a C++ 'Hello' as an example.  Save the following code as
 `hello.sh`.
@@ -461,6 +743,10 @@ frequently.
 - [Creating a Docker Image from Scratch](https://linuxhint.com/create_docker_image_from_scratch/)
 - [Build a Base Image from Scratch](https://docker-k8s-lab.readthedocs.io/en/latest/docker/docker-base-image.html)
 
+</details>
+
+</details>
+
 
 ## Reduce image size ##
 
@@ -472,8 +758,13 @@ into the image instead of the executable, you have to install GCC
 inside the image to compile the code, and GCC will contribute quite an
 amount to the size of the final image.
 
+<details>
+<summary>Click to see more ...</summary>
 
 ### Multi-stage builds ###
+
+<details>
+<summary>Click to see more ...</summary>
 
 Multi-stage builds can be used to optimize the size of an image:
 
@@ -505,8 +796,13 @@ into our final image.
 - [Advanced multi-stage build patterns](https://medium.com/@tonistiigi/advanced-multi-stage-build-patterns-6f741b852fae)
 - [Docker build patterns](https://matthiasnoback.nl/2017/04/docker-build-patterns/)
 
+</details>
+
 
 ### Remove unnecessary files ###
+
+<details>
+<summary>Click to see more ...</summary>
 
 Here is some tips:
 
@@ -543,14 +839,20 @@ Here is some tips:
 - [Squeeze disk space on a Debian system](https://ownyourbits.com/2017/02/18/squeeze-disk-space-on-a-debian-system/)
 - [Tips to Reduce Docker Image Sizes](https://hackernoon.com/tips-to-reduce-docker-image-sizes-876095da3b34)
 
+</details>
+
 
 ### Use minimization tools ###
 
 - [Skinnywhale helps you make smaller (as in megabytes) Docker containers](https://github.com/djosephsen/skinnywhale)
 
+</details>
+
 
 ## Available base image ##
 
+<details>
+<summary>Click to see more ...</summary>
 
 ### iron ###
 
@@ -595,11 +897,16 @@ It is about 2GB for GPU version, and 500MB for non-GPU.
 - [Generating Dockerfiles for reproducible research with R](http://o2r.info/containerit/articles/containerit.html)
 - [Rocker](https://github.com/rocker-org/rocker) and [Rocker -- Docker Hub](https://hub.docker.com/u/rocker/)
 
+</details>
+
 
 ## About volume ##
 
-Docker image consists of several read-only layers, which are
-corresponding to the directives in the `Dockerfile`.
+<details>
+<summary>Click to see more ...</summary>
+
+Docker image consists of several read-only layers, each of which
+corresponds to one of the directives in the `Dockerfile`.
 
 When we start a container (**container** `cA`) of an image (**image**
 `iBase`), Docker will generate a read-write layer (**layer** `lA`) on
@@ -617,14 +924,13 @@ layer `lA` on top of layer `lBase`.
 If we deleted some files in image `iBase` when creating layer `lA`,
 those files won't be seen on the containers generated by running image
 `iA`.  That doesn't mean those files are gone.  Instead they are just
-hidden in the history.  That is the reason why additional layers added
-on a image make its size bigger.
+hidden in the layer history.  That is the reason why additional layers
+added on a image make its size bigger.
 
 Due to the characteristics of Union FS, we need to persistently save
 some files outside of Docker container to the file system of the host,
-which can be solved by using volume.  The usage of Volume are:
-
-- Map a directory automatically generated by Docker on the file sytem
+which can be solved by using volume.  There are 4 ways to use volumes:
+* Map a directory automatically generated by Docker on the file sytem
   of host under `/var/lib/docker/volumes` to a directory on the file
   system of container:
 
@@ -636,7 +942,7 @@ which can be solved by using volume.  The usage of Volume are:
   `/var/lib/docker/volumes` on the host and its mapped directory in
   the container will be `/path/to/a/dir/of/container`.
 
-- Map an existing volume on the host under `/var/lib/docker/volumes`
+* Map an existing volume on the host under `/var/lib/docker/volumes`
   to a directory on the container:
 
   ```bash
@@ -648,7 +954,7 @@ which can be solved by using volume.  The usage of Volume are:
   docker run -v <volume>:/path/to/a/dir/of/container <image>
   ```
 
-- Map an existing directory on the host to a directory on the
+* Map an existing directory on the host to a directory on the
   container:
 
   ```bash
@@ -658,7 +964,7 @@ which can be solved by using volume.  The usage of Volume are:
   Just as mount, this will make the files on the host shadow those
   already existed on the container.
 
-- Share volumes among containers:
+* Share volumes among containers:
 
   ```bash
   docker run --volumes-from <container> <image>
@@ -666,6 +972,9 @@ which can be solved by using volume.  The usage of Volume are:
 
 
 ### Examples ###
+
+<details>
+<summary>Click to see more ...</summary>
 
 ```console
 $ docker run -d --rm -it -h container --name ubuntu-volume -v /home/simon ubuntu
@@ -879,8 +1188,12 @@ hello container2
 root@container5:/# exit
 ```
 
+</details>
 
-### Be careful ###
+### Other Notes ###
+
+<details>
+<summary>Click to see more ...</summary>
 
 If you want files created or changed inside a volume to be valid, you
 should put those operations before the `volume` directive:
@@ -988,12 +1301,37 @@ root@3631906e5e3b:/# cd /home/data/
 root@3631906e5e3b:/home/data# ls
 ```
 
+</details>
+
+
 ### Reference ###
 
 - [Understanding Volumes in Docker](https://container-solutions.com/understanding-volumes-docker/)
 
+</details>
+
+
+## Compose ##
+
+<details>
+<summary>Click to see more ...</summary>
+
+[Docker Compose](https://docs.docker.com/compose/) is a tool for
+defining and running multi-container Docker applications.  In other
+words, for a multi-container application, without Compose, you have to
+manually build Docker images and set up those multiple containers.
+But with Compose, you define those steps in a YAML configuration file,
+then create and start all the services from configuration file with a
+single command `docker-compose up`.  See [Get started with Docker
+Compose](https://docs.docker.com/compose/gettingstarted/).
+
+</details>
+
 
 ## Be careful ##
+
+<details>
+<summary>Click to see more ...</summary>
 
 - Do not `apt-get upgrade` inside an image if you want your work
   reproducible
@@ -1005,32 +1343,20 @@ root@3631906e5e3b:/home/data# ls
 
 - [9 Common Dockerfile Mistakes](https://runnable.com/blog/9-common-dockerfile-mistakes)
 
+</details>
 
-## Compose ##
 
-[Docker Compose](https://docs.docker.com/compose/) is a tool for
-defining and running multi-container Docker applications.  In other
-words, for a multi-container application, without Compose, you have to
-manually build Docker images and set up those multiple containers.
-But with Compose, you define those steps in a YAML configuration file,
-then create and start all the services from configuration file with a
-single command `docker-compose up`.  See [Get started with Docker
-Compose](https://docs.docker.com/compose/gettingstarted/).
+## Misc ##
 
-### Installation ###
-
-```bash
-# Use docker-compose binary directly
-sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-# Or install by pip
-pip install docker-compose
-```
+[Apptainer](https://apptainer.org/)(formerly
+[Singularity](https://singularity.lbl.gov/)) is a container platform
+similar to Docker but for HPC.  See
+* [Apptainer Documentation](https://apptainer.org/documentation/)
+* [Sigularity User Guide](https://www.sylabs.io/guides/3.0/user-guide/)
 
 
 ## Reference ##
 
 * [Docker Docs](https://docs.docker.com)
-    + [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
+  + [Gettting started guide](https://docs.docker.com/get-started/)
+  + [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
