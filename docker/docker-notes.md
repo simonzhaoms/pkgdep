@@ -502,14 +502,14 @@ There are 2 ways:
 
 ## Make a base image ##
 
+<details>
+<summary>Click to see more ...</summary>
+
 Usually we make an Docker image from a **parent image** (such as `FROM
 ubuntu`).  If we want to make our own parent image which is called
 **base image**, there are 2 ways:
 - Make a minimal OS full image 
 - Use `FROM scratch`
-
-<details>
-<summary>Click to see more ...</summary>
 
 ### Make a minimal OS image ###
 
@@ -626,6 +626,9 @@ frequently.
 
 ## Reduce image size ##
 
+<details>
+<summary>Click to see more ...</summary>
+
 The basic principle is removing unnecessary files and dependencies.
 For example, to make the above C++ 'Hello' image, you don't need GCC
 to be included in the image, though GCC is required to build the
@@ -634,8 +637,6 @@ into the image instead of the executable, you have to install GCC
 inside the image to compile the code, and GCC will contribute quite an
 amount to the size of the final image.
 
-<details>
-<summary>Click to see more ...</summary>
 
 ### Multi-stage builds ###
 
