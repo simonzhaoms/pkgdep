@@ -65,7 +65,7 @@ See [Docker Engine overview](https://docs.docker.com/engine/).
 
 There are 2 ways to install Docker (See [Install Docker on
 Linux](https://docs.docker.com/desktop/install/linux-install/)):
-1. Install Docker Server/Engine
+1. Install [Docker Server/Engine](https://docs.docker.com/engine/).
 
    <details>
    <summary>Click to see more ...</summary>
@@ -106,7 +106,7 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
 
    </details>
 
-1. Install Docker Desktop
+1. Install [Docker Desktop](https://docs.docker.com/desktop/).
    + Docker Desktop is GA, but it is not recommended to have both
      Docker Desktop and Docker Engine on the same machine.
    + Unlike Docker Engine, Docker Desktop on Linux runs a VM instead
@@ -385,14 +385,14 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
 
 ## Make a Docker image ##
 
+<details>
+<summary>Click to see more ...</summary>
+
 There are 2 ways:
 - Write a `Dockerfile`.  Describe all the commands used to create the
   image in the `Dockerfile`.
 - Save a container into an image.  Setup the environment in a
   container, then commit it into an image.
-
-<details>
-<summary>Click to see more ...</summary>
 
 ### Via `Dockerfile` ###
 
