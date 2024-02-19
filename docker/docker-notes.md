@@ -33,8 +33,9 @@ See [Docker Engine overview](https://docs.docker.com/engine/).
     the application, so it can be started and stoped by using the
     Docker API or CLI.
 * [**Docker Compose**](https://docs.docker.com/compose/)
-  + is a tool for defining and running containers in
-    [`compose.yaml`](https://docs.docker.com/compose/compose-file/).
+  + is a tool for defining and running containers in a [Compose
+    file](https://docs.docker.com/compose/compose-file/) usually
+    called `compose.yaml`.
   + is typically helpful when running multi-container applications.
     An application usually contains several parts, such as a frontend,
     and a backend database, running in different containers.  Instead
@@ -50,34 +51,6 @@ See [Docker Engine overview](https://docs.docker.com/engine/).
   + is a public registry that Docker looks for images by default.
 
 
-## Contents ##
-
-* [Installation on Ubuntu](#installation-on-ubuntu)
-* [Workflow](#workflow)
-* [Docker CLI commands](#docker-cli-commands)
-* [Make a Docker image](#make-a-docker-image)
-  + [Via `Dockerfile`](#via-dockerfile)
-  + [Via container](#via-container)
-* [Make a base image](#make-a-base-image)
-  + [Make a minimal OS image](#make-a-minimal-os-image)
-  + [Use `FROM scratch`](#use-from-scratch)
-* [Reduce image size](#reduce-image-size)
-  + [Multi-stage builds](#Multi-stage-builds)
-  + [Remove unnecessary files](#remove-unnecessary-files)
-  + [Use minimization tools](#use-minimization-tools)
-* [Available base image](#available-base-image)
-  + [iron](#iron)
-  + [phusion](#phusion)
-  + [minideb](#minideb)
-  + [miniconda3](#miniconda3)
-  + [tensorflow](#tensorflow)
-  + [R images](#r-images)
-* [About volume](#about-volume)
-* [Compose](#compose)
-* [Be careful](#be-careful)
-* [Misc](#misc)
-
-
 ## Installation on Ubuntu ##
 
 <details>
@@ -85,53 +58,53 @@ See [Docker Engine overview](https://docs.docker.com/engine/).
 
 There are 2 ways to install Docker (See [Install Docker on
 Linux](https://docs.docker.com/desktop/install/linux-install/)):
-* Install Docker Server/Engine
+1. Install Docker Server/Engine
 
-  <details>
-  <summary>Click to see more ...</summary>
+   <details>
+   <summary>Click to see more ...</summary>
 
-  ```bash
-  ARCH=$(dpkg --print-architecture)
-  CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
-  
-  APT_URL="https://download.docker.com/linux/ubuntu"
-  APT_LIST="/etc/apt/sources.list.d/docker.list"
-  KEYRING_DIR="/etc/apt/keyrings"
-  GPG_PATH="${KEYRING_DIR}/docker.asc"
-  GPG_URL="${APT_URL}/gpg"
-  
-  APT_ENTRY="deb [arch=${ARCH} signed-by=${GPG_PATH}] ${APT_URL} ${CODENAME} stable"
-  
-  # Update APT package index in case of new fresh install
-  sudo apt-get update
-  
-  # Install necessary dependencies
-  sudo apt-get install -y ca-certificates curl
-  
-  # Add Docker's official GPG key
-  sudo install -m 0755 -d "${KEYRING_DIR}"
-  curl -fsSL "${GPG_URL}" | sudo gpg --dearmor -o "${GPG_PATH}"
-  sudo chmod a+r "${GPG_PATH}"
-  
-  # Set Docker APT repo source
-  echo "${APT_ENTRY}" | sudo tee "${APT_LIST}" > /dev/null
-  sudo apt-get update
-  
-  # Install the latest Docker community edition
-  sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-  
-  # Test if docker is installed properly.
-  sudo docker run hello-world
-  ```
+   ```bash
+   ARCH=$(dpkg --print-architecture)
+   CODENAME=$(. /etc/os-release && echo "$VERSION_CODENAME")
+   
+   APT_URL="https://download.docker.com/linux/ubuntu"
+   APT_LIST="/etc/apt/sources.list.d/docker.list"
+   KEYRING_DIR="/etc/apt/keyrings"
+   GPG_PATH="${KEYRING_DIR}/docker.asc"
+   GPG_URL="${APT_URL}/gpg"
+   
+   APT_ENTRY="deb [arch=${ARCH} signed-by=${GPG_PATH}] ${APT_URL} ${CODENAME} stable"
+   
+   # Update APT package index in case of new fresh install
+   sudo apt-get update
+   
+   # Install necessary dependencies
+   sudo apt-get install -y ca-certificates curl
+   
+   # Add Docker's official GPG key
+   sudo install -m 0755 -d "${KEYRING_DIR}"
+   curl -fsSL "${GPG_URL}" | sudo gpg --dearmor -o "${GPG_PATH}"
+   sudo chmod a+r "${GPG_PATH}"
+   
+   # Set Docker APT repo source
+   echo "${APT_ENTRY}" | sudo tee "${APT_LIST}" > /dev/null
+   sudo apt-get update
+   
+   # Install the latest Docker community edition
+   sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+   
+   # Test if docker is installed properly.
+   sudo docker run hello-world
+   ```
 
-  </details>
+   </details>
 
-* Install Docker Desktop
-  + Docker Desktop is GA, but it is not recommended to have both
-    Docker Desktop and Docker Engine on the same machine.
-  + Unlike Docker Engine, Docker Desktop on Linux runs a VM instead of
-    directly on the machine.  More details can be found at [FAQs for
-    Linux](https://docs.docker.com/desktop/faqs/linuxfaqs/).
+1. Install Docker Desktop
+   + Docker Desktop is GA, but it is not recommended to have both
+     Docker Desktop and Docker Engine on the same machine.
+   + Unlike Docker Engine, Docker Desktop on Linux runs a VM instead
+     of directly on the machine.  More details can be found at [FAQs
+     for Linux](https://docs.docker.com/desktop/faqs/linuxfaqs/).
 
 </details>
 
@@ -167,26 +140,140 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
 1. Create and run a container from the image to test your application
    using [`docker container
    run`](https://docs.docker.com/engine/reference/commandline/container_run/)
-   (`docker run`).
+   (`docker run`).  See also [Running
+   containers](https://docs.docker.com/engine/reference/run/).
 
    ```bash
-   # the `-d` option tells Docker to run the container in detached
-   # mode, that is, in background
-   docker run -d <IMAGE-TAG>
+   docker run <IMAGE-TAG>
    ```
 
    <details>
    <summary>Click to see more ...</summary>
 
+   * A new container will be created every time you run this command
+     instead of re-using previous container of the same image, thus
+     every container have a unique ID and name which can be referred
+     to afterwards.
    * To list avaiable containers, use [`docker container
      ls`](https://docs.docker.com/engine/reference/commandline/container_ls/)
      (`docker ps`).
+     
+     ```
+     $ # -a is used to show all containers including those finishing running,
+     $ # otherwise, only running containers are listed.
+     $ docker container ls -a
+     CONTAINER ID  IMAGE        COMMAND   CREATED       STATUS                   PORTS  NAMES
+     caf880f16684  hello-world  "/hello"  16 hours ago  Exited (0) 16 hours ago         eager_cori
+     $
+     $ # list only container ID
+     $ docker container ls -aq
+     caf880f16684
+     ```
+
+   * A name can be given to the container via the `--name` option for
+     later reference.
+     
+     ```console
+     $ docker run --name mytest hello-world
+     $ docker ps -a
+     CONTAINER ID   IMAGE         COMMAND    CREATED          STATUS                     PORTS     NAMES
+     43218a4b9223   hello-world   "/hello"   6 seconds ago    Exited (0) 6 seconds ago             mytest
+     a318b8ca5283   ubuntu        "bash"     35 minutes ago   Up 34 minutes                        trusting_knuth
+     $ docker rm mytest
+     mytest
+     $ docker ps -a
+     CONTAINER ID   IMAGE     COMMAND   CREATED          STATUS          PORTS     NAMES
+     a318b8ca5283   ubuntu    "bash"    35 minutes ago   Up 35 minutes             trusting_knuth
+     ```
+
+   * The container runs in the foreground by default until the process
+     finishes.
+     + Containers of some images such as the `bash` image will exit
+       immediately when running.
+       
+       ```console
+       $ docker ps -a
+       CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+       $ docker run --name mytest bash
+       $ docker ps -a
+       CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS                     PORTS     NAMES
+       f6f667f1fbe0   bash      "docker-entrypoint.s…"   3 seconds ago   Exited (0) 2 seconds ago             mytest
+       ```
+       
+       - To prevent the container exiting, we can use the
+         `-i/--interactive` option to keep STDIN open, and add
+         together the `-t/--tty` option to attach a pseudo-TTY, so
+         that the input and output feature (such as echo-off) of TTY
+         devices can be used, thus we create an interactive terminal
+         session for the container.  See also [Keep STDIN
+         open](https://docs.docker.com/engine/reference/commandline/container_run/#interactive)
+         and [Allocate a
+         pseudo-TTY](https://docs.docker.com/engine/reference/commandline/container_run/#tty).
+       - To escape the interactive terminal session but leave the
+         container run in the backgroud without exiting, we can type
+         `Ctrl + P Ctrl+ Q`.  If we use `Ctrl + D` when in the
+         terminal session of the container, the container will exit
+         intead of keeping running in the background.
+       - To re-attach to the interactive termianl session running in
+         the backgroud, we can use [`docker container
+         attach`](https://docs.docker.com/engine/reference/commandline/container_attach/)
+         (`docker attach`).
+       - To make the container running in the background without
+         exiting, we can use the `-d/--detach` option toghter with
+         `-it` to make it run in detached mode.
+       
+       ```console
+       $ docker run --name mytest -it bash
+       bash-5.2# pwd  # Now we are in the interactive terminal session of the contaienr
+       /
+       bash-5.2#  # Type Ctrl + P Ctrl + Q to escape
+       $ docker ps
+       CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES
+       1644696b8cac   bash      "docker-entrypoint.s…"   14 minutes ago   Up 14 minutes             mytest
+       $ docker attach mytest
+       bash-5.2# pwd
+       /
+       bash-5.2#  # Type Ctrl + P Ctrl + Q to escape
+       $ docker ps
+       CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES
+       1644696b8cac   bash      "docker-entrypoint.s…"   25 minutes ago   Up 25 minutes             mytest
+       Simons-MacBook-Pro:~ simon$ docker rm -f mytest
+       mytest
+       Simons-MacBook-Pro:~ simon$ docker ps
+       CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+       Simons-MacBook-Pro:~ simon$ docker run --name mytest -it -d bash
+       dc45b105b4192c04b30476cdf5eaa82cb3b1c87d954fcc4a8d24b07790d1b6d3
+       Simons-MacBook-Pro:~ simon$ docker ps
+       CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS     NAMES
+       dc45b105b419   bash      "docker-entrypoint.s…"   2 seconds ago   Up 2 seconds             mytest
+       Simons-MacBook-Pro:~ simon$ docker attach mytest
+       bash-5.2# pwd
+       /
+       bash-5.2# 
+       ```
+
+   * The `-a/--attach` option can be used to specify which of STDIN,
+     STDOUT and STDERR of the contaienr needs to be connected to the
+     host.
+     
+     ```
+     # Attach STDIN and STDOUT only
+     docker run -a stdin -a stdout <IMAGE-TAG>
+     ```
+
+     + It is usually used when containers are piped because the attach
+       is transient.  To keep STDIN attached and open all the time,
+       use the `-i/--interactive` option instead.
+     + See also [Understanding docker run --attach
+       option](https://forums.docker.com/t/understanding-docker-run-attach-option/134337/4)
+       and [Attach to
+       STDIN/STDOUT/STDERR](https://docs.docker.com/engine/reference/commandline/container_run/#attach)
    * To view the details of a container, use [`docker container
      inspect`](https://docs.docker.com/engine/reference/commandline/container_inspect/)
      with its ID.
    * To view the container logs, use [`docker container
      logs`](https://docs.docker.com/engine/reference/commandline/container_logs/)
-     (`docker logs`) with its ID.
+     (`docker logs`) with its ID or name.
    * To mount a directory on the host to a directory in the container:
 
      ```bash
@@ -201,6 +288,8 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
      ```bash
      docker exec <CONTAINER-ID> <COMMAND>
      ```
+     
+     Use the `-it` option, we can run the command interatcitvely.
 
    * For multi-container applications, networking is required.
 
@@ -246,12 +335,36 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
    (`docker rm`).
 
    ```bash
-   # The following 2 commands can be completed by the single command
-   # below:
-   #     docker rm -f <CONTAINER-ID>
    docker stop <CONTAINER-ID>
    docker rm <CONTAINER-ID>
    ```
+
+   <details>
+   <summary>Click to see more ...</summary>
+
+   * The 2 commands above can be completed by the single command
+     `docker rm -f <CONTAINER-ID>`.
+   * By default, a container's file system persists after the
+     container exits so that we can inspect the container for
+     debugging.  That's why we use `docker rm` to delete the
+     container to save spaces.
+   * Useful commands for removal:
+   
+     ```bash
+     # Remove all containers
+     docker rm $(docker ps -aq)
+     
+     # Remove only those containers stopping running
+     docker rm $(docker ps -aq -f "status=exited")
+     docker container prune
+     ```
+ 
+   * To re-run a stopped container, we can use [`docker container
+     start`](https://docs.docker.com/engine/reference/commandline/container_start/)
+     (`docker start`).  By using `-a/--attach`, we can attach to
+     interact with it.
+     
+   </details>
 
 1. Create and run a new container from the new image to test the
    update.
@@ -259,250 +372,6 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
    Hub, using [`docker image
    push`](https://docs.docker.com/engine/reference/commandline/image_push/)
    (`docker push`).
-
-</details>
-
-
-## Docker CLI commands ##
-
-<details>
-<summary>Click to see more ...</summary>
-
-### General info ###
-
-<details>
-<summary>Click to see more ...</summary>
-
-```console
-$ # print out docker usage, equivalent to: sudo docker --help
-$ sudo docker
-
-Usage:  docker [OPTIONS] COMMAND
-
-A self-sufficient runtime for containers
-
-Common Commands:
-  run         Create and run a new container from an image
-  exec        Execute a command in a running container
-  ps          List containers
-  build       Build an image from a Dockerfile
-  pull        Download an image from a registry
-  push        Upload an image to a registry
-  images      List images
-  login       Log in to a registry
-  logout      Log out from a registry
-  search      Search Docker Hub for images
-  version     Show the Docker version information
-  info        Display system-wide information
-
-Management Commands:
-  builder     Manage builds
-  buildx*     Docker Buildx (Docker Inc., v0.11.2)
-  compose*    Docker Compose (Docker Inc., v2.21.0)
-  container   Manage containers
-  context     Manage contexts
-  image       Manage images
-  manifest    Manage Docker image manifests and manifest lists
-  network     Manage networks
-  plugin      Manage plugins
-  system      Manage Docker
-  trust       Manage trust on Docker images
-  volume      Manage volumes
-
-Swarm Commands:
-  swarm       Manage Swarm
-
-Commands:
-  attach      Attach local standard input, output, and error streams to a running container
-  commit      Create a new image from a container's changes
-  cp          Copy files/folders between a container and the local filesystem
-  create      Create a new container
-  diff        Inspect changes to files or directories on a container's filesystem
-  events      Get real time events from the server
-  export      Export a container's filesystem as a tar archive
-  history     Show the history of an image
-  import      Import the contents from a tarball to create a filesystem image
-  inspect     Return low-level information on Docker objects
-  kill        Kill one or more running containers
-  load        Load an image from a tar archive or STDIN
-  logs        Fetch the logs of a container
-  pause       Pause all processes within one or more containers
-  port        List port mappings or a specific mapping for the container
-  rename      Rename a container
-  restart     Restart one or more containers
-  rm          Remove one or more containers
-  rmi         Remove one or more images
-  save        Save one or more images to a tar archive (streamed to STDOUT by default)
-  start       Start one or more stopped containers
-  stats       Display a live stream of container(s) resource usage statistics
-  stop        Stop one or more running containers
-  tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
-  top         Display the running processes of a container
-  unpause     Unpause all processes within one or more containers
-  update      Update configuration of one or more containers
-  wait        Block until one or more containers stop, then print their exit codes
-
-Global Options:
-      --config string      Location of client config files (default "/root/.docker")
-  -c, --context string     Name of the context to use to connect to the daemon (overrides
-                           DOCKER_HOST env var and default context set with "docker context use")
-  -D, --debug              Enable debug mode
-  -H, --host list          Daemon socket to connect to
-  -l, --log-level string   Set the logging level ("debug", "info", "warn", "error", "fatal")
-                           (default "info")
-      --tls                Use TLS; implied by --tlsverify
-      --tlscacert string   Trust certs signed only by this CA (default "/root/.docker/ca.pem")
-      --tlscert string     Path to TLS certificate file (default "/root/.docker/cert.pem")
-      --tlskey string      Path to TLS key file (default "/root/.docker/key.pem")
-      --tlsverify          Use TLS and verify the remote
-  -v, --version            Print version information and quit
-
-Run 'docker COMMAND --help' for more information on a command.
-
-For more help on how to use Docker, head to https://docs.docker.com/go/guides/
-
-$ # print out docker version
-$ sudo docker --version
-Docker version 24.0.7, build afdd53b
-
-$ # more detailed version
-$ sudo docker version
-Client: Docker Engine - Community
- Version:           24.0.7
- API version:       1.43
- Go version:        go1.20.10
- Git commit:        afdd53b
- Built:             Thu Oct 26 09:07:41 2023
- OS/Arch:           linux/amd64
- Context:           default
-
-Server: Docker Engine - Community
- Engine:
-  Version:          24.0.7
-  API version:      1.43 (minimum version 1.12)
-  Go version:       go1.20.10
-  Git commit:       311b9ff
-  Built:            Thu Oct 26 09:07:41 2023
-  OS/Arch:          linux/amd64
-  Experimental:     false
- containerd:
-  Version:          1.6.25
-  GitCommit:        d8f198a4ed8892c764191ef7b3b06d8a2eeb5c7f
- runc:
-  Version:          1.1.10
-  GitCommit:        v1.1.10-0-g18a0cb0
- docker-init:
-  Version:          0.19.0
-  GitCommit:        de40ad0
-```
-
-</details>
-
-
-### Walkthrough ###
-
-<details>
-<summary>Click to see more ...</summary>
-
-```console
-$ # run image <xxx>, equivalent to:
-$ #     docker container run xxx
-$ # if you want to remove the container automatically after finishing running:
-$ #     docker run --rm xxx
-
-$ # Note: A new container will be created every time you run this command
-$ #       instead of re-using previous container of the same image, thus every 
-$ #       container have a unique ID and name which can be refered to afterwards.
-$ docker run xxx
-
-$ # list available images downloaded
-$ docker images ls
-REPOSITORY   TAG     IMAGE ID      CREATED      SIZE
-hello-world  latest  4ab4c602aa5e  5 weeks ago  1.84kB
-
-$ # list all containers, including those finishing running, equivalent to:
-$ #     docker ps -a
-$ docker container ls -a
-CONTAINER ID  IMAGE        COMMAND   CREATED       STATUS                   PORTS  NAMES
-caf880f16684  hello-world  "/hello"  16 hours ago  Exited (0) 16 hours ago         eager_cori
-
-$ # list only container ID
-$ docker container ls -aq
-caf880f16684
-
-$ # remove all container, equivalent to
-$ #     docker container rm $(docker container ls -aq)
-$ # if you want to remove only those container stopping running:
-$ #     docker container rm $(docker container ls -aq -f status=exited)
-$ # or
-$ #     docker container prune
-$ docker rm $(docker container ls -aq)
-
-$ # print out the log of container caf880f16684
-$ # add -f to follow the log tail
-$ docker logs caf880f16684
-
-$ # rerun the container 4c40d0c1c838 which stoped beforehand, and attach it, 
-$ # so you can interact with it, otherwise, without --attach, it will run in background.
-$ # it is equivalent to:
-$ #     docker container start --attach 4c40d0c1c838
-$ docker start --attach 4c40d0c1c838
-
-$ # run the application 'bash' in the image 'ubuntu', where -it denotes interactive.
-$ # it is equivalent to:
-$ #     docker container run -it ubuntu bash
-$ # if you want it run in background, use option -d, which means dettach:
-$ #     docker run -it -d ubuntu bash
-$ # usually the hostname of container is its ID, if you want the container have a 
-$ # different hostname, use option -h:
-$ #     docker run -h mycontainer -it ubuntu bash
-$ docker run -it ubuntu bash
-root@5856302872b0 $ # here we are in the container, you can press Ctrl + Q + P to 
-root@5856302872b0 $ # leave it run in background.
-$ # or open another terminal, you will see the container is in running.
-$ # to interact with a container run in background, you can attach it:
-$ #     docker attach naughty_ptolemy
-$ docker ps -a
-CONTAINER ID  IMAGE        COMMAND   CREATED         STATUS                     PORTS  NAMES
-5856302872b0  ubuntu       "bash"    6 minutes ago   Up 6 minutes                      naughty_ptolemy
-4c40d0c1c838  hello-world  "/hello"  17 minutes ago  Exited (0) 13 minutes ago         thirsty_minsky
-
-$ # stop a container, equivalent to:
-$ #     docker container stop naughty_ptolemy
-$ docker stop naughty_ptolemy
-$ docker ps -a
-CONTAINER ID  IMAGE        COMMAND   CREATED      STATUS                    PORTS  NAMES
-5856302872b0  ubuntu       "bash"    2 hours ago  Exited (0) 4 seconds ago         naughty_ptolemy
-4c40d0c1c838  hello-world  "/hello"  2 hours ago  Exited (0) 2 hours ago           thirsty_minsky
-
-$ # remove a container by its name. if the container is still running:
-$ #     docker rm -f thirsty_minsky
-$ docker rm thirsty_minsky
-thirsty_minsky
-$ docker ps -a
-CONTAINER ID  IMAGE        COMMAND   CREATED      STATUS                    PORTS  NAMES
-5856302872b0  ubuntu       "bash"    2 hours ago  Exited (0) 4 minutes ago         naughty_ptolemy
-
-$ # run a container of image hello-world and give it a name 'mytest', equivalent to:
-$ #     docker container run --name mytest hello-world
-$ docker run --name mytest hello-world
-$ docker ps -a
-CONTAINER ID  IMAGE        COMMAND   CREATED        STATUS                    PORTS  NAMES
-f3912fdb365b  hello-world  "/hello"  5 seconds ago  Exited (0) 3 seconds ago         mytest
-5856302872b0  ubuntu       "bash"    2 hours ago    Exited (0) 6 minutes ago         naughty_ptolemy
-```
-
-</details>
-
-
-### Reference ###
-
-- [Get Started with Docker](https://docs.docker.com/get-started/)
-- [Docker Tutorial: Get Going From Scratch](https://stackify.com/docker-tutorial/)
-- [Docker Tutorial: Play With Containers](https://dzone.com/articles/docker-tutorial-play-with-containers-simple-exampl)
-- [Docker Tutorial -- Getting Started with Python, Redis, and Nginx](https://hackernoon.com/docker-tutorial-getting-started-with-python-redis-and-nginx-81a9d740d091)
-- [docker-curriculum.com](https://docker-curriculum.com/)
-- [R Docker tutorial](http://ropenscilabs.github.io/r-docker-tutorial/)
 
 </details>
 
@@ -1348,7 +1217,7 @@ Compose](https://docs.docker.com/compose/gettingstarted/).
 
 ## Misc ##
 
-[Apptainer](https://apptainer.org/)(formerly
+[Apptainer](https://apptainer.org/) (formerly
 [Singularity](https://singularity.lbl.gov/)) is a container platform
 similar to Docker but for HPC.  See
 * [Apptainer Documentation](https://apptainer.org/documentation/)
