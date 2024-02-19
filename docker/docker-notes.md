@@ -1,5 +1,10 @@
 # Docker notes #
 
+## Introduction ##
+
+<details>
+<summary>Click to see more ...</summary>
+
 See [Docker Engine overview](https://docs.docker.com/engine/).
 * **Docker**
   + provides the tools to package and run an application in an
@@ -49,6 +54,8 @@ See [Docker Engine overview](https://docs.docker.com/engine/).
   + is a place storing Docker images.
 * **Docker Hub** (https://hub.docker.com)
   + is a public registry that Docker looks for images by default.
+
+</details>
 
 
 ## Installation on Ubuntu ##
