@@ -64,12 +64,17 @@ See [Docker Engine overview](https://docs.docker.com/engine/).
     becomes in memory when executed (that is, an image with state, or
     a user process).
   + In terms of implementation, the difference between an image and
-    its containers is the top writable layer, which means a container
-    is made up of the single top writable layer plus the underlying
-    read-only layers from the image.  All writes to the container that
-    add new or modify existing data are stored in this writable layer.
-    When the container is deleted, the writable layer is also deleted.
-    The underlying image remains unchanged.  See [Container and
+    its containers is the top writable layer called the container
+    layer.  It means that a container is made up of the single top
+    writable layer plus the underlying read-only layers from the
+    image.  All writes to the container that add new or modify
+    existing data are stored in this writable layer.  When the
+    container is deleted, the writable layer is also deleted.  The
+    underlying image remains unchanged.  The layer filesystem is
+    managed by a [storage
+    driver](https://docs.docker.com/storage/storagedriver/).  Docker
+    uses storage drivers to store image layers, and to store data in
+    the writable container layer.  See [Container and
     layers](https://docs.docker.com/storage/storagedriver/#container-and-layers)
     for more details.
   + runs as a sandboxed process containing everything needed to run
@@ -511,7 +516,9 @@ There are 2 ways:
      them to be uppercase to distinguish them from arguments more
      eaily.
    * The order of Dockerfile instructions matters because each
-     instruction in a Dockerfile roughly translates to an image layer.
+     instruction in a Dockerfile roughly translates to an image layer,
+     except instructions such as `LABEL` and `CMD` which only modifies
+     the image's metadata.
    * When building an image, the Docker builder attempts to reuse
      layers from earlier builds.
      + If a layer of an image is unchnaged, then the builder picks it
