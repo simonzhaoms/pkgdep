@@ -1,5 +1,12 @@
 # Docker #
 
+* [Installation](./install.md)
+* [Development Workflow Using Docker](./workflow.md)
+* [Running Containers](./run-container.md)
+
+
+## Glossary ##
+
 See [Docker Engine overview](https://docs.docker.com/engine/).
 * **Docker**
   + is a platform that provides the tools to package and run an
@@ -100,8 +107,3 @@ See [Docker Engine overview](https://docs.docker.com/engine/).
   + is a place storing Docker images.
 * **Docker Hub** (https://hub.docker.com)
   + is a public registry that Docker looks for images by default.
-
-
-* [Installation](./install.md)
-* [Development Workflow Using Docker](./workflow.md)
-* [Running Containers](./run-container.md)
