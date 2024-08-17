@@ -2,7 +2,7 @@
 
 * [Installation](./install.md)
 * [Workflow Using Docker for Development](./workflow.md)
-* [Running Containers](./run-container.md)
+* [Running Containers](./container.md)
 * [Image Creation](./image.md)
 * [About Mounts](./mount.md)
 
