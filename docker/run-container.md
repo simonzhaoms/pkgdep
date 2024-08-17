@@ -14,8 +14,8 @@ containers](https://docs.docker.com/engine/reference/run/).
   $ # -a is used to show all containers including those finishing running,
   $ # otherwise, only running containers are listed.
   $ docker container ls -a
-  CONTAINER ID  IMAGE        COMMAND   CREATED       STATUS                   PORTS  NAMES
-  caf880f16684  hello-world  "/hello"  16 hours ago  Exited (0) 16 hours ago         eager_cori
+  CONTAINER ID  IMAGE        COMMAND   CREATED       STATUS                   NAMES
+  caf880f16684  hello-world  "/hello"  16 hours ago  Exited (0) 16 hours ago  eager_cori
   $
   $ # list only container ID
   $ docker container ls -aq
@@ -127,19 +127,54 @@ containers](https://docs.docker.com/engine/reference/run/).
       option](https://forums.docker.com/t/understanding-docker-run-attach-option/134337/4)
       and [Attach to
       STDIN/STDOUT/STDERR](https://docs.docker.com/engine/reference/commandline/container_run/#attach)
+  + To mount a directory on the host to a directory in the container:
+  
+    ```bash
+    # There is another new recommended option `--mount` for `-v`
+    docker run -v <HOST-PATH>:<CONTAINER-PATH> <IMAGE-TAG>
+    ```
+
+  + For multi-container applications, networking is required.
+  
+    ```bash
+    # Create a network
+    docker network create <NEWTORK-NAME>
+  
+    # Run a container and connnet it to the network using the
+    # `--network` option, thus the container will have its own IP.
+    # Meanwhile, give a domain name to the container using the
+    # `--network-alias` option for later reference by name instead
+    # of IP.
+    docker run --network <NETWORK-NAME> --network-alias <DOMAIN-NAME1> <IMAGE-TAG1>...
+  
+    # Run another container and connect it to the network as well
+    docker run --network <NETWORK-NAME> -v <HOST-PATH>:<CONTAINER-PATH> <IMAGE-TAG2>...
+    ```
+  
+    To simplify the running of multiple containers, Docker Compose can
+    be used to spin everything up by defining the operations in a YAML
+    file called `compose.yaml` and then running [`docker compose
+    up`](https://docs.docker.com/engine/reference/commandline/compose_up/),
+    so the two `docker run`s above can be configured as below:
+  
+    ```yaml
+    services:
+      <DOMAIN-NAME1>:
+        # No <NETWORK-NAME> is required, since it will be created
+        # automatically when using Docker Compose
+        image: <IMAGE-TAG1>
+      <DOMAIN-NAME2>:
+        image: <IMAGE-TAG2>
+        volumes:
+          - <HOST-PATH>:<CONTAINER-PATH>
+    ```
+
 * [`docker container
   inspect`](https://docs.docker.com/engine/reference/commandline/container_inspect/)
   -- View the details of a container.
 * [`docker container
   logs`](https://docs.docker.com/engine/reference/commandline/container_logs/)
   (`docker logs`) -- View the container logs.
-* To mount a directory on the host to a directory in the container:
-
-  ```bash
-  # There is another new recommended option `--mount` for `-v`
-  docker run -v <HOST-PATH>:<CONTAINER-PATH> <IMAGE-TAG>
-  ```
-
 * [`docker container
   exec`](https://docs.docker.com/engine/reference/commandline/container_exec/)
   (`docker exec`) -- Run a command in a running container.
@@ -149,38 +184,3 @@ containers](https://docs.docker.com/engine/reference/run/).
   ```
   
   + Use the `-it` option, we can run the command interatcitvely.
-
-* For multi-container applications, networking is required.
-
-  ```bash
-  # Create a network
-  docker network create <NEWTORK-NAME>
-
-  # Run a container and connnet it to the network using the
-  # `--network` option, thus the container will have its own IP.
-  # Meanwhile, give a domain name to the container using the
-  # `--network-alias` option for later reference by name instead
-  # of IP.
-  docker run --network <NETWORK-NAME> --network-alias <DOMAIN-NAME1> <IMAGE-TAG1>...
-
-  # Run another container and connect it to the network as well
-  docker run --network <NETWORK-NAME> -v <HOST-PATH>:<CONTAINER-PATH> <IMAGE-TAG2>...
-  ```
-
-  To simplify the running of multiple containers, Docker Compose can
-  be used to spin everything up by defining the operations in a YAML
-  file called `compose.yaml` and then running [`docker compose
-  up`](https://docs.docker.com/engine/reference/commandline/compose_up/),
-  so the two `docker run`s above can be configured as below:
-
-  ```yaml
-  services:
-    <DOMAIN-NAME1>:
-      # No <NETWORK-NAME> is required, since it will be created
-      # automatically when using Docker Compose
-      image: <IMAGE-TAG1>
-    <DOMAIN-NAME2>:
-      image: <IMAGE-TAG2>
-      volumes:
-        - <HOST-PATH>:<CONTAINER-PATH>
-  ```
