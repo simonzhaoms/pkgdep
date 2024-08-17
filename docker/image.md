@@ -317,6 +317,7 @@ Removing intermediate container ce8506ded932
  ---> 362d7a6980b5
 Successfully built 362d7a6980b5
 Successfully tagged hello:latest
+
 $ docker history hello
 IMAGE         CREATED      CREATED BY                         SIZE    COMMENT
 362d7a6980b5  2 hours ago  /bin/sh -c #(nop)  CMD ["/hello"]  0B

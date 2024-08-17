@@ -16,7 +16,7 @@ containers](https://docs.docker.com/engine/reference/run/).
   $ docker container ls -a
   CONTAINER ID  IMAGE        COMMAND   CREATED       STATUS                   NAMES
   caf880f16684  hello-world  "/hello"  16 hours ago  Exited (0) 16 hours ago  eager_cori
-  $
+
   $ # list only container ID
   $ docker container ls -aq
   caf880f16684
@@ -34,12 +34,15 @@ containers](https://docs.docker.com/engine/reference/run/).
 
     ```console
     $ docker run --name mytest hello-world
+
     $ docker ps -a
     CONTAINER ID   IMAGE         COMMAND    CREATED          STATUS                       NAMES
     43218a4b9223   hello-world   "/hello"   6 seconds ago    Exited (0) 6 seconds ago     mytest
     a318b8ca5283   ubuntu        "bash"     35 minutes ago   Up 34 minutes                trusting_knuth
+
     $ docker rm mytest
     mytest
+
     $ docker ps -a
     CONTAINER ID   IMAGE     COMMAND   CREATED          STATUS            NAMES
     a318b8ca5283   ubuntu    "bash"    35 minutes ago   Up 35 minutes     trusting_knuth
@@ -53,7 +56,9 @@ containers](https://docs.docker.com/engine/reference/run/).
       ```console
       $ docker ps -a
       CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS     NAMES
+
       $ docker run --name mytest bash
+
       $ docker ps -a
       CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS                       NAMES
       f6f667f1fbe0   bash      "docker-entrypoint.s…"   3 seconds ago   Exited (0) 2 seconds ag      mytest
@@ -83,31 +88,45 @@ containers](https://docs.docker.com/engine/reference/run/).
       
       ```console
       $ docker run --name mytest -it bash
+
       bash-5.2# pwd  # Now we are in the interactive terminal session of the contaienr
       /
+
       bash-5.2#  # Type Ctrl + P Ctrl + Q to escape
+
       $ docker ps
       CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS            NAMES
       1644696b8cac   bash      "docker-entrypoint.s…"   14 minutes ago   Up 14 minute      mytest
+
       $ docker attach mytest
+
       bash-5.2# pwd
       /
+
       bash-5.2#  # Type Ctrl + P Ctrl + Q to escape
+
       $ docker ps
       CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS            NAMES
       1644696b8cac   bash      "docker-entrypoint.s…"   25 minutes ago   Up 25 minute      mytest
+
       $ docker rm -f mytest
       mytest
+
       $ docker ps
       CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
       $ docker run --name mytest -it -d bash
       dc45b105b4192c04b30476cdf5eaa82cb3b1c87d954fcc4a8d24b07790d1b6d3
+
       $ docker ps
       CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS           NAMES
       dc45b105b419   bash      "docker-entrypoint.s…"   2 seconds ago   Up 2 second      mytest
+
       $ docker attach mytest
+
       bash-5.2# pwd
       /
+
       bash-5.2# 
       ```
 

@@ -32,10 +32,3 @@ Compose](https://docs.docker.com/compose/gettingstarted/).
 similar to Docker but for HPC.  See
 * [Apptainer Documentation](https://apptainer.org/documentation/)
 * [Sigularity User Guide](https://www.sylabs.io/guides/3.0/user-guide/)
-
-
-## Reference ##
-
-* [Docker Docs](https://docs.docker.com)
-  + [Gettting started guide](https://docs.docker.com/get-started/)
-  + [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)

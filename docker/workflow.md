@@ -36,6 +36,7 @@ The typical workflow using Docker for development is:
        bash                                latest    b6281a9c2552   5 weeks ago    14MB
        docker/welcome-to-docker            latest    c1f619b6477e   3 months ago   18.6MB
        hello-world                         latest    d2c94e258dcb   9 months ago   13.3kB
+
        $ docker images bash
        REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
        bash         latest    b6281a9c2552   5 weeks ago   14MB
