@@ -156,7 +156,6 @@ root@container:/# ls /home/
 simon
 
 root@container:/# ls /home/simon/
-
 root@container:/# read escape sequence  # Use Ctrl+Q+P to put container in background
 
 $ docker ps -a
@@ -165,45 +164,62 @@ f64319429baf  ubuntu  "/bin/bash"  a minute ago  Up a minute         ubuntu-volu
 
 $ # Modify files in the volume on the host
 $ sudo bash -c "echo hello > /var/lib/docker/volumes/b17e59405de1/_data/abc"
+
 $ sudo cat /var/lib/docker/volumes/b17e59405de1/_data/abc
 hello
+
 $ docker attach ubuntu-volume  # go into container again
+
 root@container:/# cat /home/simon/abc 
 hello
+
 root@container:/# cat /home/simon/abc 
 hello
+
 root@container:/# ll /home/simon/
 total 12
 drwxr-xr-x 2 root root 4096 Nov 24 03:58 ./
 drwxr-xr-x 1 root root 4096 Nov 24 03:55 ../
 -rw-r--r-- 1 root root    6 Nov 24 03:58 abc
+
 root@container:/# echo simon >> /home/simon/abc 
 root@container:/# cat /home/simon/abc 
 hello
 simon
+
 root@container:/# read escape sequence  # Use Ctrl+Q+P to put container in background again
+
 $ docker ps -a
 CONTAINER ID  IMAGE   COMMAND      CREATED        STATUS        PORTS  NAMES
 f64319429baf  ubuntu  "/bin/bash"  4 minutes ago  Up 4 minutes         ubuntu-volume
+
 $ sudo cat /var/lib/docker/volumes/b17e59405de1/_data/abc  # Check modification 
 hello
 simon
+
 $ docker volume rm b17e59405de1  # Remove a volume
 b17e59405de1
+
 $ docker volume create  # Create a volume
 0280dc142b07
+
 $ docker volume ls
 DRIVER              VOLUME NAME
 local               0280dc142b07
+
 $ docker volume rm 0280dc142b07
 0280dc142b07
+
 $ docker volume ls
 DRIVER              VOLUME NAME
+
 $ docker volume create --name test  # Create a volume and give it a name
 test
+
 $ docker volume ls
 DRIVER              VOLUME NAME
 local               test
+
 $ docker volume inspect test   # Check the volume info
 [
     {
@@ -216,22 +232,30 @@ $ docker volume inspect test   # Check the volume info
         "Scope": "local"
     }
 ]
+
 $ sudo bash -c 'echo "hello" >> /var/lib/docker/volumes/test/_data/abc'
+
 $ sudo cat /var/lib/docker/volumes/test/_data/abc
 hello
+
 $ # New a container, and map a existing volume to a dir inside the container.
 $ # Then the files already existed in the volume will shadow those inside the container.
 $ docker run -it --rm -h container --name ubuntu-volume -v test:/home/simon ubuntu
 e5df1092e96f
+
 root@container:/# cat /home/simon/abc 
 hello
+
 root@container:/# exit
+
 $ docker ps -aq
 $ docker volume ls -q
 test
+
 $ # Map /bin on the host to /bin on the container.
 $ # So the binaries in /bin are those on the host
 $ docker run -it --rm -h container --name ubuntu-volume -v /bin:/bin ubuntu
+
 root@container:/# ls /bin/
 bash           fuser       nisdomainname  stty
 brltty         fusermount  ntfs-3g        su
@@ -243,9 +267,12 @@ bzdiff         gzip        ntfsfallocate  systemd-escape
 bzegrep        hciconfig   ntfsfix        systemd-hwdb
 bzexe          hostname    ntfsinfo       systemd-inhibit
 ...
+
 root@container:/# exit
+
 $ # See the difference inside /bin on the host above and /bin on the container below
 $ docker run -it --rm -h container --name ubuntu-volume ubuntu
+
 root@container:/# ls /bin/
 bash          cat            echo      ls             rbash       tempfile      zegrep
 bunzip2       chgrp          egrep     lsblk          readlink    touch         zfgrep
@@ -257,18 +284,24 @@ bzexe         date           gunzip    mount          sh          vdir          
 bzfgrep       dd             gzexe     mountpoint     sh.distrib  wdctl
 bzgrep        df             gzip      mv             sleep       which
 ...
+
 root@container:/# exit
+
 $ docker container prune  # Remove unused container
 $ docker volume prune     # Remove unused volume
 $ docker ps -aq           # Check containers
 $ docker volume ls -q     # Check volumes
+
 $ # New a container and new a volume
 $ docker run -itd -h container1 --name container1 -v /home/simon ubuntu
 16d720adb189
+
 $ docker ps -aq
 16d720adb189
+
 $ docker volume ls -q
 3a75da9c2bb17f6be1e7
+
 $ # See, 'destination' only shows in docker inspect container
 $ docker volume inspect 3a75da9c2bb17f6be1e7
 [
@@ -282,56 +315,79 @@ $ docker volume inspect 3a75da9c2bb17f6be1e7
         "Scope": "local"
     }
 ]
+
 $ # Share container between containers
 $ docker run -it -h container2 --name container2 --volumes-from container1 ubuntu
+
 root@container2:/# cd /home/
 root@container2:/home# cd simon/
 root@container2:/home/simon# ls
 root@container2:
+
 $ docker ps -aq
 0a4a65c0d8a0
 16d720adb189
+
 $ docker attach container1
+
 root@container1:/# echo "hello container1" >> /home/simon/abc
 root@container1:/# read escape sequence
+
 $ docker attach container2
+
 root@container2:/home/simon# ls
 abc
+
 root@container2:/home/simon# cat abc 
 hello container1
+
 root@container2:/home/simon# echo "hello container2" >> abc 
 root@container2:/home/simon# read escape sequence
+
 $ docker attach container1
+
 root@container1:/# cat /home/simon/abc 
 hello container1
 hello container2
+
 root@container1:/# read escape sequence
+
 $ docker stop container1 container2
 container1
 container2
+
 $ docker ps -aq
 0a4a65c0d8a0
 16d720adb189
+
 $ # Share volume with a third container
 $ docker run -it -h container3 --name container3 --volumes-from container2 ubuntu
+
 root@container3:/# ls /home/simon/abc 
 /home/simon/abc
+
 root@container3:/# cat /home/simon/abc 
 hello container1
 hello container2
+
 root@container3:/# exit
+
 $ # Use volume name to map.  However, the name is different from the previous volume
 $ docker run -it -h container4 --name container4 -v 3a75da9c2bb1:/home/data ubuntu
+
 root@container4:/# cd /home/
 root@container4:/home# cd data/
 root@container4:/home/data# ls 
 root@container4:/home/data# exit
+
 $ docker volume ls
 DRIVER              VOLUME NAME
 local               3a75da9c2bb1
 local               3a75da9c2bb17f6be1e7
+
 $ # This is the correct name for the volume to be shared.
 $ docker run -it -h container5 --name container5 -v 3a75da9c2bb17f6be1e7:/home/data ubuntu
+
 root@container5:/# ls /home/data/
 abc
 root@container5:/# cat /home/data/abc 
@@ -377,6 +433,7 @@ run mkdir /home/data
 run echo "hello" >> /home/data/abc
 volume /home/data
 cmd ["bash"]
+
 $ docker build -t testvolume .
 Sending build context to Docker daemon  2.048kB
 Step 1/5 : from ubuntu
@@ -399,28 +456,40 @@ Removing intermediate container cf66aaef0363
  ---> dac633d0f3f5
 Successfully built dac633d0f3f5
 Successfully tagged testvolume:latest
+
 $ docker ps -aq
 $ docker volume ls -q
+
 $ # New a container, mount volume, /home/data/abc does exist
 $ docker run -it --rm testvolume
+
 root@b5cd2a2ee79a:/# cd /home/data
 root@b5cd2a2ee79a:/home/data# cat abc 
 hello
+
 root@b5cd2a2ee79a:/home/data# exit
+
 $ docker volume ls -q
 651b43a9bf819ea8ec47
+
 $ mkdir volume
 $ echo "simon" >> volume/def
 $ docker volume rm 651b43a9bf819ea8ec47
 651b43a9bf819ea8ec47
+
 $ docker volume ls -q
+
 $ # If mount a existed dir on the host, /home/data/abc does not exist
 $ docker run -it -v ${PWD}/volume:/home/data testvolume
+
 root@bfd2d718e8ca:/# ls /home/data/
 def
+
 root@bfd2d718e8ca:/# cat /home/data/def 
 simon
+
 root@bfd2d718e8ca:/# exit
+
 $ # Change the order of volume directive and file modification
 $ emacs Dockerfile
 $ cat Dockerfile
@@ -428,6 +497,7 @@ from ubuntu
 volume /home/data
 run echo "hello" >> /home/data/abc
 cmd ["bash"]
+
 $ docker build -t testvolume2 .
 Sending build context to Docker daemon  2.048kB
 Step 1/4 : from ubuntu
@@ -446,6 +516,7 @@ Removing intermediate container 187f37a1bbf9
  ---> 280e29e2a3f6
 Successfully built 280e29e2a3f6
 Successfully tagged testvolume2:latest
+
 $ # See the modification is invalid
 $ docker run -it testvolume2
 root@3631906e5e3b:/# ls /home/data/
