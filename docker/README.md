@@ -1,7 +1,7 @@
 # Docker #
 
 * [Installation](./install.md)
-* [Development Workflow Using Docker](./workflow.md)
+* [Workflow Using Docker for Development](./workflow.md)
 * [Running Containers](./run-container.md)
 
 

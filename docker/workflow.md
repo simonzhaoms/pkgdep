@@ -17,32 +17,33 @@ The typical workflow using Docker for development is:
      Dockerfile, and git the image a tag `<IMAGE-TAG>`.
    * We can also directly specify the Dockerfile by the `-f
      <DOCKERFILE>` option.
-   * [`docker image
-     build`](https://docs.docker.com/engine/reference/commandline/image_build/)
-     (`docker build`) -- Build a Docker image.
-   * [`docker image
-     ls`](https://docs.docker.com/engine/reference/commandline/image_ls/)
-     (`docker images`) -- List available Docker images.
-       
-     ```console
-     $ docker images
-     REPOSITORY                          TAG       IMAGE ID       CREATED        SIZE
-     myproject                           latest    7a5e87002f14   2 days ago     7.38MB
-     multi-container-app-main-todo-app   latest    a1bccf51da38   2 days ago     226MB
-     <none>                              <none>    c642d7a9236e   2 days ago     226MB
-     ubuntu                              latest    3db8720ecbf5   6 days ago     77.9MB
-     mongo                               6         af2af2fc1fab   13 days ago    689MB
-     bash                                latest    b6281a9c2552   5 weeks ago    14MB
-     docker/welcome-to-docker            latest    c1f619b6477e   3 months ago   18.6MB
-     hello-world                         latest    d2c94e258dcb   9 months ago   13.3kB
-     $ docker images bash
-     REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
-     bash         latest    b6281a9c2552   5 weeks ago   14MB
-     ```
-
-   * [`docker image
-     history`](https://docs.docker.com/engine/reference/commandline/image_history/)
-     (`docker history`) -- View the layers in a Docker image.
+   * Subcommands of `docker image`
+     + [`docker image
+       build`](https://docs.docker.com/engine/reference/commandline/image_build/)
+       (`docker build`) -- Build a Docker image.
+     + [`docker image
+       ls`](https://docs.docker.com/engine/reference/commandline/image_ls/)
+       (`docker images`) -- List available Docker images.
+         
+       ```console
+       $ docker images
+       REPOSITORY                          TAG       IMAGE ID       CREATED        SIZE
+       myproject                           latest    7a5e87002f14   2 days ago     7.38MB
+       multi-container-app-main-todo-app   latest    a1bccf51da38   2 days ago     226MB
+       <none>                              <none>    c642d7a9236e   2 days ago     226MB
+       ubuntu                              latest    3db8720ecbf5   6 days ago     77.9MB
+       mongo                               6         af2af2fc1fab   13 days ago    689MB
+       bash                                latest    b6281a9c2552   5 weeks ago    14MB
+       docker/welcome-to-docker            latest    c1f619b6477e   3 months ago   18.6MB
+       hello-world                         latest    d2c94e258dcb   9 months ago   13.3kB
+       $ docker images bash
+       REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+       bash         latest    b6281a9c2552   5 weeks ago   14MB
+       ```
+  
+     + [`docker image
+       history`](https://docs.docker.com/engine/reference/commandline/image_history/)
+       (`docker history`) -- View the layers in a Docker image.
 1. Run a container
 
    ```bash
@@ -74,22 +75,24 @@ The typical workflow using Docker for development is:
      container file system when it exits, we can use [`docker run
      --rm`](https://docs.docker.com/engine/reference/commandline/container_run/#rm)
      when running a container.
-   * [`docker container
-     stop`](https://docs.docker.com/engine/reference/commandline/container_stop/)
-     (`docker stop`) -- Stop a running container.
-   * [`docker container
-     rm`](https://docs.docker.com/engine/reference/commandline/container_rm/)
-     (`docker rm`) -- Remove a container.
-   * [`docker container
-     start`](https://docs.docker.com/engine/reference/commandline/container_start/)
-     (`docker start`)
-     + Re-run a stopped container.
-     + We can attach to interact with the container by using the
-       `-a/--attach` option.
+   * Subcommands of `docker container`
+     + [`docker container
+       stop`](https://docs.docker.com/engine/reference/commandline/container_stop/)
+       (`docker stop`) -- Stop a running container.
+     + [`docker container
+       rm`](https://docs.docker.com/engine/reference/commandline/container_rm/)
+       (`docker rm`) -- Remove a container.
+     + [`docker container
+       start`](https://docs.docker.com/engine/reference/commandline/container_start/)
+       (`docker start`)
+       - Re-run a stopped container.
+       - We can attach to interact with the container by using the
+         `-a/--attach` option.
    * Useful commands for removal:
    
      ```bash
      # Remove all containers
+     # The command `docker ps` below is a shortcut of `docker container ls`.
      docker rm $(docker ps -aq)
      
      # Remove only those containers stopping running
