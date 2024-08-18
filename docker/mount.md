@@ -212,6 +212,121 @@ container:
      docker run --volumes-from <container> <image>
      ```
 
+     <details>
+     <summary>Click to see more examples ...</summary>
+
+     ```console
+     $ docker container prune  # Remove unused container
+     $ docker volume prune     # Remove unused volume
+     $ docker ps -aq           # Check containers
+     $ docker volume ls -q     # Check volumes
+     
+     $ # New a container and new a volume
+     $ docker run -itd -h container1 --name container1 -v /home/simon ubuntu
+     16d720adb189
+     
+     $ docker ps -aq
+     16d720adb189
+     
+     $ docker volume ls -q
+     3a75da9c2bb17f6be1e7
+     
+     $ # See, 'destination' only shows in docker inspect container
+     $ docker volume inspect 3a75da9c2bb17f6be1e7
+     [
+         {
+             "CreatedAt": "2018-11-25T10:23:31+08:00",
+             "Driver": "local",
+             "Labels": null,
+             "Mountpoint": "/var/lib/docker/volumes/3a75da9c2bb17f6be1e7/_data",
+             "Name": "3a75da9c2bb17f6be1e7",
+             "Options": null,
+             "Scope": "local"
+         }
+     ]
+     
+     $ # Share container between containers
+     $ docker run -it -h container2 --name container2 --volumes-from container1 ubuntu
+     
+         root@container2:/# cd /home/
+         root@container2:/home# cd simon/
+         root@container2:/home/simon# ls
+         root@container2:
+     
+     $ docker ps -aq
+     0a4a65c0d8a0
+     16d720adb189
+     
+     $ docker attach container1
+     
+         root@container1:/# echo "hello container1" >> /home/simon/abc
+         root@container1:/# read escape sequence
+     
+     $ docker attach container2
+     
+         root@container2:/home/simon# ls
+         abc
+         
+         root@container2:/home/simon# cat abc 
+         hello container1
+         
+         root@container2:/home/simon# echo "hello container2" >> abc 
+         root@container2:/home/simon# read escape sequence
+     
+     $ docker attach container1
+     
+         root@container1:/# cat /home/simon/abc 
+         hello container1
+         hello container2
+         
+         root@container1:/# read escape sequence
+     
+     $ docker stop container1 container2
+     container1
+     container2
+     
+     $ docker ps -aq
+     0a4a65c0d8a0
+     16d720adb189
+     
+     $ # Share volume with a third container
+     $ docker run -it -h container3 --name container3 --volumes-from container2 ubuntu
+     
+         root@container3:/# ls /home/simon/abc 
+         /home/simon/abc
+         
+         root@container3:/# cat /home/simon/abc 
+         hello container1
+         hello container2
+         
+         root@container3:/# exit
+     
+     $ # Use volume name to map.  However, the name is different from the previous volume
+     $ docker run -it -h container4 --name container4 -v 3a75da9c2bb1:/home/data ubuntu
+     
+         root@container4:/# cd /home/
+         root@container4:/home# cd data/
+         root@container4:/home/data# ls 
+         root@container4:/home/data# exit
+     
+     $ docker volume ls
+     DRIVER              VOLUME NAME
+     local               3a75da9c2bb1
+     local               3a75da9c2bb17f6be1e7
+     
+     $ # This is the correct name for the volume to be shared.
+     $ docker run -it -h container5 --name container5 -v 3a75da9c2bb17f6be1e7:/home/data ubuntu
+     
+         root@container5:/# ls /home/data/
+         abc
+         root@container5:/# cat /home/data/abc 
+         hello container1
+         hello container2
+         root@container5:/# exit
+     ```
+
+     </details>
+
 * Volumes can also be created and mounted by using the recommended
   unified `--mount` option.
 * Unlike bind mounts and regular directories that are dependent on and
@@ -301,124 +416,7 @@ container is called **tmpfs mounts**.
   permannently.
 
 
-## Examples ##
-
-<details>
-<summary>Click to see more ...</summary>
-
-```console
-$ docker container prune  # Remove unused container
-$ docker volume prune     # Remove unused volume
-$ docker ps -aq           # Check containers
-$ docker volume ls -q     # Check volumes
-
-$ # New a container and new a volume
-$ docker run -itd -h container1 --name container1 -v /home/simon ubuntu
-16d720adb189
-
-$ docker ps -aq
-16d720adb189
-
-$ docker volume ls -q
-3a75da9c2bb17f6be1e7
-
-$ # See, 'destination' only shows in docker inspect container
-$ docker volume inspect 3a75da9c2bb17f6be1e7
-[
-    {
-        "CreatedAt": "2018-11-25T10:23:31+08:00",
-        "Driver": "local",
-        "Labels": null,
-        "Mountpoint": "/var/lib/docker/volumes/3a75da9c2bb17f6be1e7/_data",
-        "Name": "3a75da9c2bb17f6be1e7",
-        "Options": null,
-        "Scope": "local"
-    }
-]
-
-$ # Share container between containers
-$ docker run -it -h container2 --name container2 --volumes-from container1 ubuntu
-
-root@container2:/# cd /home/
-root@container2:/home# cd simon/
-root@container2:/home/simon# ls
-root@container2:
-
-$ docker ps -aq
-0a4a65c0d8a0
-16d720adb189
-
-$ docker attach container1
-
-root@container1:/# echo "hello container1" >> /home/simon/abc
-root@container1:/# read escape sequence
-
-$ docker attach container2
-
-root@container2:/home/simon# ls
-abc
-
-root@container2:/home/simon# cat abc 
-hello container1
-
-root@container2:/home/simon# echo "hello container2" >> abc 
-root@container2:/home/simon# read escape sequence
-
-$ docker attach container1
-
-root@container1:/# cat /home/simon/abc 
-hello container1
-hello container2
-
-root@container1:/# read escape sequence
-
-$ docker stop container1 container2
-container1
-container2
-
-$ docker ps -aq
-0a4a65c0d8a0
-16d720adb189
-
-$ # Share volume with a third container
-$ docker run -it -h container3 --name container3 --volumes-from container2 ubuntu
-
-root@container3:/# ls /home/simon/abc 
-/home/simon/abc
-
-root@container3:/# cat /home/simon/abc 
-hello container1
-hello container2
-
-root@container3:/# exit
-
-$ # Use volume name to map.  However, the name is different from the previous volume
-$ docker run -it -h container4 --name container4 -v 3a75da9c2bb1:/home/data ubuntu
-
-root@container4:/# cd /home/
-root@container4:/home# cd data/
-root@container4:/home/data# ls 
-root@container4:/home/data# exit
-
-$ docker volume ls
-DRIVER              VOLUME NAME
-local               3a75da9c2bb1
-local               3a75da9c2bb17f6be1e7
-
-$ # This is the correct name for the volume to be shared.
-$ docker run -it -h container5 --name container5 -v 3a75da9c2bb17f6be1e7:/home/data ubuntu
-
-root@container5:/# ls /home/data/
-abc
-root@container5:/# cat /home/data/abc 
-hello container1
-hello container2
-root@container5:/# exit
-```
-
-</details>
-
-## Other Notes ##
+## One More Thing ##
 
 <details>
 <summary>Click to see more ...</summary>
@@ -427,6 +425,7 @@ If you want files created or changed inside a volume to be valid, you
 should put those operations before the `volume` directive:
 
 ```dockerfile
+# Dockerfile1
 from ubuntu
 
 run mkdir /home/data
@@ -437,6 +436,7 @@ cmd ["bash"]
 ```
 
 ```dockerfile
+# Dockerfile2
 from ubuntu
 
 volume /home/data  # volume directive before operations to the files
@@ -447,14 +447,14 @@ cmd ["bash"]
 
 ```console
 $ # Notice the order between volume directive and the file modification
-$ cat Dockerfile
+$ cat Dockerfile1
 from ubuntu
 run mkdir /home/data
 run echo "hello" >> /home/data/abc
 volume /home/data
 cmd ["bash"]
 
-$ docker build -t testvolume .
+$ docker build -t testvolume -f Dockerfile1 .
 Sending build context to Docker daemon  2.048kB
 Step 1/5 : from ubuntu
  ---> 93fd78260bd1
@@ -483,11 +483,11 @@ $ docker volume ls -q
 $ # New a container, mount volume, /home/data/abc does exist
 $ docker run -it --rm testvolume
 
-root@b5cd2a2ee79a:/# cd /home/data
-root@b5cd2a2ee79a:/home/data# cat abc 
-hello
-
-root@b5cd2a2ee79a:/home/data# exit
+    root@b5cd2a2ee79a:/# cd /home/data
+    root@b5cd2a2ee79a:/home/data# cat abc 
+    hello
+    
+    root@b5cd2a2ee79a:/home/data# exit
 
 $ docker volume ls -q
 651b43a9bf819ea8ec47
@@ -499,26 +499,25 @@ $ docker volume rm 651b43a9bf819ea8ec47
 
 $ docker volume ls -q
 
-$ # If mount a existed dir on the host, /home/data/abc does not exist
+$ # If an existting dir on the host is mounted, /home/data/abc does not exist
 $ docker run -it -v ${PWD}/volume:/home/data testvolume
 
-root@bfd2d718e8ca:/# ls /home/data/
-def
-
-root@bfd2d718e8ca:/# cat /home/data/def 
-simon
-
-root@bfd2d718e8ca:/# exit
+    root@bfd2d718e8ca:/# ls /home/data/
+    def
+    
+    root@bfd2d718e8ca:/# cat /home/data/def 
+    simon
+    
+    root@bfd2d718e8ca:/# exit
 
 $ # Change the order of volume directive and file modification
-$ emacs Dockerfile
-$ cat Dockerfile
+$ cat Dockerfile2
 from ubuntu
 volume /home/data
 run echo "hello" >> /home/data/abc
 cmd ["bash"]
 
-$ docker build -t testvolume2 .
+$ docker build -t testvolume2 -f Dockerfile2 .
 Sending build context to Docker daemon  2.048kB
 Step 1/4 : from ubuntu
  ---> 93fd78260bd1
@@ -539,9 +538,9 @@ Successfully tagged testvolume2:latest
 
 $ # See the modification is invalid
 $ docker run -it testvolume2
-root@3631906e5e3b:/# ls /home/data/
-root@3631906e5e3b:/# cd /home/data/
-root@3631906e5e3b:/home/data# ls
+    root@3631906e5e3b:/# ls /home/data/
+    root@3631906e5e3b:/# cd /home/data/
+    root@3631906e5e3b:/home/data# ls
 ```
 
 </details>
