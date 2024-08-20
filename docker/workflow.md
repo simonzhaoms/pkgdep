@@ -9,18 +9,23 @@ The typical workflow using Docker for development is:
 1. Build a **Docker image**.
 
    ```bash
-   docker build -t <IMAGE-TAG> <DOCKERFILE-DIRECTORY>
+   docker build -t <IMAGE-TAG> <PATH>
    ```
 
-   * The command looks for a file called `Dockerfile` under
-     `<DOCKERFILE-DIRECTORY>`, build a Docker image from the
-     Dockerfile, and git the image a tag `<IMAGE-TAG>`.
-   * We can also directly specify the Dockerfile by the `-f
-     <DOCKERFILE>` option.
+   * If `<PATH>` is a directory, the command looks for a file called
+     exactly `Dockerfile` under `<PATH>`, builds a Docker image from
+     the Dockerfile, and give the image a name `<IMAGE-TAG>`.
+   * We can also specify the Dockerfile by the `-f <DOCKERFILE>`
+     option if it has another name instead of `Dockerfile`.
+   * Actually, `<PATH>` is used to specify the context that Docker can
+     have access to.  It can also be a remote URL of a Git repo,
+     tarball, or plain-text file.  More on this can be found at [Build
+     context](https://docs.docker.com/build/building/context/).
    * Subcommands of `docker image`
-     + [`docker image
-       build`](https://docs.docker.com/engine/reference/commandline/image_build/)
-       (`docker build`) -- Build a Docker image.
+     + [`docker buildx
+       build`](https://docs.docker.com/reference/cli/docker/buildx/build/)
+       (`docker image build` / `docker build`) -- Build a Docker
+       image.
      + [`docker image
        ls`](https://docs.docker.com/engine/reference/commandline/image_ls/)
        (`docker images`) -- List available Docker images.

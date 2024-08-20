@@ -40,8 +40,9 @@ There are 2 ways:
    FROM ubuntu
 
    # Run the commands.  Here we install python3.
-   # Make sure to 'apt-get update' before 'apt-get install', and use 'apt-get' instead of 
-   # 'apt', otherwise, you will get a warning:
+   # Make sure to 'apt-get update' before 'apt-get install'.
+   # See https://docs.docker.com/build/building/best-practices/#apt-get
+   # Use 'apt-get' instead of 'apt', otherwise, you will get a warning:
    #     WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
    RUN apt-get update; apt-get install -y python3
    
@@ -89,7 +90,9 @@ There are 2 ways:
        build`](https://docs.docker.com/engine/reference/commandline/image_build/)
        (`docker build`) provides the `--target` option to specify the
        stage needed to build, instead of building all stages by
-       default.
+       default.  This is useful especially when you build the testing
+       stage and the production stage for testing and production,
+       respectively.
      + Any existing images can be used as a stage, not only the stages
        defined in the Dockerfile, as in `COPY --from=ubuntu:latest`.
      + Since a stage will result in an intermediate image, so any
@@ -123,6 +126,53 @@ There are 2 ways:
         docker build --build-arg="VERSION=22.04"
         ```
 
+   * Environment variables defined by the
+     [`ENV`](https://docs.docker.com/reference/dockerfile/#env)
+     instruction are used to set persistent environment variables.
+     + Both `ARG`and `ENV` can be used to set variables used by
+       subsequent commands, but variables set `ARG` are only available
+       at build time, and persist in the image metadata and in the
+       image history, while `ENV` variables are available at both
+       build time and runtime, and persist in containers.  So both
+       build arguments and environment variables are not suitable for
+       [holding
+       secrets](https://docs.docker.com/build/building/secrets/).
+     + Note that, unsetting `ENV` variables by `RUN unset XXX` only
+       take effect on the shell process this `RUN` starts, so
+       subsequent `RUN`s will still see the `ENV` variables.
+     + More about the differences between environment variables and
+       build arguments and how to use them in difference scopes can be
+       found at [Build
+       variables](https://docs.docker.com/build/building/variables/).
+     + `ENV` variables are treated differently when they are used with
+       `RUN`, `CMD` and `ENTRYPOINT`, compared to being used with
+       other instructions like `ADD`, `FROM`, `COPY`, etc.  The `ENV`
+       variable substituion is handled by the command shell when used
+       with `RUN`, and the image builder when used with `FROM`.
+   * `RUN`, `ENTRYPOINT` and `CMD` accept [2 forms of
+     arguments](https://docs.docker.com/reference/dockerfile/#shell-and-exec-form).
+     + exect form
+       - `INSTRUCTION ["executable", "param1", "param2"]`
+     + shell form
+       - `INSTRUCTION command param1 param2`
+       - In shell form, a default shell is used to invoke the
+         `command`.  For example, `RUN echo hello` is equivalent to
+         `RUN ["/bin/sh", "-c", "echo hello"]`.
+       - The default shell to use can be changed by [the `SHELL`
+         instruction](https://docs.docker.com/reference/dockerfile/#shell).
+   * [`CMD`](https://docs.docker.com/reference/dockerfile/#cmd) and
+     [`ENTRYPOINT`](https://docs.docker.com/reference/dockerfile/#entrypoint)
+     are used to set the command to be executed when running a
+     container from an image.
+     + [`docker
+       inspect`](https://docs.docker.com/reference/cli/docker/inspect/)
+       can be used to view detailed information of docker objects,
+       such as the `CMD` and `ENTRYPOINT` of an image.
+       - [The `CMD` of the `ubuntu:24.04`
+         image](https://git.launchpad.net/cloud-images/+oci/ubuntu-base/tree/Dockerfile?h=noble-24.04)
+         is `["/bin/bash"]`.
+       - The `ENTRYPOINT` of the `bash` image is a script
+         [`docker-entrypoint.sh`](https://github.com/tianon/docker-bash/blob/master/docker-entrypoint.sh).
    * Sometimes, we just want to use Docker container as an isolated
      environment like a virtual machine to compile souce code and get
      the binaries only, instead of a Docker image.  To do that, we

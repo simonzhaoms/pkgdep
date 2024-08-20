@@ -10,13 +10,18 @@
 ## Reference ##
 
 * [Docker Docs](https://docs.docker.com)
-  + [Gettting started guide](https://docs.docker.com/get-started/)
+  + [Docker CLI reference](https://docs.docker.com/reference/cli/docker/)
+    - Reference for the docker commands such as `docker build`,
+      `docker run`.
   + [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
 
 
 ## Glossary ##
 
-See [Docker Engine overview](https://docs.docker.com/engine/).
+See
+* [Docker Engine overview](https://docs.docker.com/engine/)
+* [Docker Glossary](https://docs.docker.com/glossary/)
+
 * **Docker**
   + is a platform that provides the tools to package and run an
     application in an environment called a **container** that is
@@ -69,7 +74,8 @@ See [Docker Engine overview](https://docs.docker.com/engine/).
     filesystem changes and the corresponding execution parameters for
     use within a container runtime.  An image typically contains a
     union of layered filesystems stacked on top of each other, and is
-    built from a Dockerfile.
+    built from a Dockerfile.  In other words, an image is a collection
+    of files plus container runtime execution parameters.
 * **Docker container**
   + is a runnable instance of an Docker image -- what the Docker image
     becomes in memory when executed (that is, an image with state, or
