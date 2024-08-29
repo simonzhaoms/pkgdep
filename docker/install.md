@@ -32,7 +32,7 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
    sudo apt-get install -y ca-certificates curl
    # 4. Add Docker's official GPG key
    sudo install -m 0755 -d "${KEYRING_DIR}"
-   curl -fsSL "${GPG_URL}" -o "${GPG_PATH}"
+   sudo curl -fsSL "${GPG_URL}" -o "${GPG_PATH}"
    sudo chmod a+r "${GPG_PATH}"
    # 5. Set Docker APT repo source
    #    Need VPN in China to access the docker server
