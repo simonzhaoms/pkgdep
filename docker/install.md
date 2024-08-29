@@ -26,7 +26,7 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
    
    # Add Docker's official GPG key
    sudo install -m 0755 -d "${KEYRING_DIR}"
-   curl -fsSL "${GPG_URL}" | sudo gpg --dearmor -o "${GPG_PATH}"
+   curl -fsSL "${GPG_URL}" | sudo gpg -o "${GPG_PATH}"
    sudo chmod a+r "${GPG_PATH}"
    
    # Set Docker APT repo source
