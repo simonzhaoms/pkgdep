@@ -47,9 +47,11 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
    # Manage Docker as a non-root user
    # See https://docs.docker.com/engine/install/linux-postinstall/
    # 1. Add current user to the docker group
-   sudo groupadd docker
    sudo usermod -aG docker $USER
    sudo reboot
+   # 2. (Optional) if `sudo docker run hello-world` was run before
+   sudo chown "$USER":"$USER" /home/"$USER"/.docker -R
+   sudo chmod g+rwx "$HOME/.docker" -R
    # 2. (Optional on Ubuntu) Start Docker service on boot
    sudo systemctl enable docker.service
    sudo systemctl enable containerd.service
