@@ -39,11 +39,8 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
    echo "${APT_ENTRY}" | sudo tee "${APT_LIST}" > /dev/null
    sudo apt-get update
    # 6. Install the latest Docker community edition
+   #    * docker-ce depends on docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
    sudo apt-get install -y docker-ce
-   sudo apt-get install -y docker-ce-cli
-   sudo apt-get install -y containerd.io
-   sudo apt-get install -y docker-buildx-plugin
-   sudo apt-get install -y docker-compose-plugin
    # 7. Test if docker is installed properly.
    sudo docker run hello-world
    
@@ -52,9 +49,7 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
    # 1. Add current user to the docker group
    sudo groupadd docker
    sudo usermod -aG docker $USER
-   newgrp docker
-   sudo chown "$USER":"$USER" /home/"$USER"/.docker -R
-   sudo chmod g+rwx "$HOME/.docker" -R
+   sudo reboot
    # 2. (Optional on Ubuntu) Start Docker service on boot
    sudo systemctl enable docker.service
    sudo systemctl enable containerd.service
