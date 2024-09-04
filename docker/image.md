@@ -140,10 +140,19 @@ There are 2 ways:
      + Note that, unsetting `ENV` variables by `RUN unset XXX` only
        take effect on the shell process this `RUN` starts, so
        subsequent `RUN`s will still see the `ENV` variables.
-     + More about the differences between environment variables and
-       build arguments and how to use them in difference scopes can be
-       found at [Build
-       variables](https://docs.docker.com/build/building/variables/).
+     + Global scope is the area in between the first line and the
+       first `FROM`.
+       - `ENV` variables cannot be declared in the global scope.
+       - `ENV` and `ARG` variables in a build stage will be inherited
+         from its parent stage.
+       - `ARG` variables in the global scope will not be inherited
+         into build stages.  To inherit a global `ARG` variable into a
+         build stage, we must consume/redeclare them in the build
+         stage.
+       - More about the differences between environment variables and
+         build arguments and how to use them in difference scopes can
+         be found at [Build
+         variables](https://docs.docker.com/build/building/variables/).
      + `ENV` variables are treated differently when they are used with
        `RUN`, `CMD` and `ENTRYPOINT`, compared to being used with
        other instructions like `ADD`, `FROM`, `COPY`, etc.  The `ENV`
