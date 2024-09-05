@@ -93,6 +93,9 @@ There are 2 ways:
        default.  This is useful especially when you build the testing
        stage and the production stage for testing and production,
        respectively.
+     + If no `--target` is specified, the final image will be built
+       from the last stage.  See [Concept: multi-stage
+       builds](https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/).
      + Any existing images can be used as a stage, not only the stages
        defined in the Dockerfile, as in `COPY --from=ubuntu:latest`.
      + Since a stage will result in an intermediate image, so any
