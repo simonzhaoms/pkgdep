@@ -30,7 +30,8 @@ See
     - [Use containers to Build, Share and Run your applications](https://www.docker.com/resources/what-container/)
     - [Docker -- Glossary](https://docs.docker.com/glossary/#docker)
   + uses a client-server arthitecutre:
-    - **The Docker daemon** (also called **Docker Engine**)
+    - **The Docker daemon** (also called **Docker Engine** or **Docker
+      CE**)
       * a long-running daemon process
         ([`dockerd`](https://docs.docker.com/engine/reference/commandline/dockerd/))
         listens for Docker API requests and manages Docker objects
@@ -119,6 +120,23 @@ See
     Extensions, Docker Content Trust, Kubernetes, and Credential
     Helper.
 * **Docker registry**
-  + is a place storing Docker images.
-* **Docker Hub** (https://hub.docker.com)
-  + is a public registry that Docker looks for images by default.
+  + is a place storing Docker images, so that Docker images can be
+    shared or distributed via [image
+    registries](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-registry/).
+  + **Docker Hub** (https://hub.docker.com) is a public registry that
+    Docker looks for images by default.
+    - In the registry, related images are collected as repositores.
+  + In addition, there are many other registries, including
+    - [Amazon Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/)
+    - [Azure Container Registry (ACR)](https://azure.microsoft.com/en-in/products/container-registry)
+    - [Google Container Registry (GCR)](https://cloud.google.com/artifact-registry)
+  + Many organizations also set up their own private registries.
+  + Docker provides `registry-mirrors` [the Docker daemon
+    configuration
+    file](https://docs.docker.com/reference/cli/dockerd/#daemon-configuration-file)
+    to specify the registry.
+  + In some countries, such as China, certain public registries are
+    not accessible, so developers [set up their own Docker Hub
+    mirrors](https://docs.docker.com/docker-hub/image-library/mirror/).
+    - One of the mirrors are [DaoCloud public image
+      mirror](https://github.com/DaoCloud/public-image-mirror/tree/main).
