@@ -46,6 +46,7 @@ Thus it won't conflict with the system's `pip` any more.
 * [Virtual environment](#virtual-environment)
 * [Common workflow of developing packages with `conda`](#common-workflow-of-developing-packages-with-conda)
 * [Install Anaconda inside Docker](#install-anaconda-inside-docker)
+* [Configuration](#configurtion)
 
 
 ## Installation ##
@@ -234,6 +235,127 @@ ENV PATH=/opt/conda/bin:${PATH}
 ### Reference ###
 
 - [continuumio/anaconda -- DockerHub](https://hub.docker.com/r/continuumio/anaconda/~/dockerfile/)
+
+
+## Configuration ##
+
+Conda uses the YAML file called `.condarc` for settings such as
+channel URLs, directories, environment, proxy, Bash prompt, etc.
+Available configuration options can be found at the [configuration
+page](https://docs.conda.io/projects/conda/en/latest/configuration.html)
+and
+[settings](https://docs.conda.io/projects/conda/en/latest/user-guide/configuration/settings.html).
+
+There are 3 places where Conda looks for the configuration file
+`.condarc` (See [Searching for
+.condarc](https://docs.conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#searching-for-condarc)):
+* system configuration directory, such as `/etc/conda/.condarc`
+* Conda installation directory, such as `$CONDA_ROOT/.condarc`
+* user's home directory, such as `~/.condarc`
+* current active environment, such as `$CONDA_PREFIX/.condarc`
+
+Configuraitons defined in user's home directory seem to override those
+defined in the Conda installation directory.
+
+In addition to directly changing `.condarc`, the command [`conda
+config`](https://docs.conda.io/projects/conda/en/latest/commands/config.html)
+can also be used for configuration.
+* By default, `conda config` modifies the settings in user's home
+  directory.  This can be changed by `--system`, `--env` (active conda
+  environment), and `--name` (specified environment), `--file`
+  (specified configuration file).
+  + The command creates the configuration file `.condarc` if it does
+    not exist.
+* `conda config --get xxx`
+  + get the value of YAML configuration key `xxx`.
+* `conda config --append xxx yyy`
+  + append the value `yyy` to the YAML configuration key `xxx`.
+* `conda config --set xxx yyy`
+  + set the value of the YAML configuraiton key `xxx` to `yyy`.
+* `conda config --remove xxx yyy`
+  + remove the existing value `yyy` from the YAML configuration key
+    `xxx`.
+* `conda config --remove-key xxx`
+  + remove the YAML configuraiton key `xxx` and all its values.
+
+In China, `conda install` is usually very slow.  Fortunately, there
+are many mirroring channels out there for speedup.  Below is [an
+example of
+`.condarc`](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/) that
+uses the [Anaconda mirroring channels provided by TUNA (Tsinghua
+University Network
+Administrators)](https://mirrors.tuna.tsinghua.edu.cn/anaconda/).
+
+```yaml
+channels:
+  - defaults
+show_channel_urls: true
+
+# by default,
+#   https://repo.anaconda.com/pkgs/main
+#   https://repo.anaconda.com/pkgs/r
+#   https://repo.anaconda.com/pkgs/msys2
+default_channels:
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
+
+# by default,
+#   https://conda.anaconda.org/conda-forge
+#   https://conda.anaconda.org/pytorch
+custom_channels:
+  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+```
+
+Likewise, [`pip
+config`](https://pip.pypa.io/en/stable/cli/pip_config/) can be used
+for `pip` configuration.  The `pip` command also has 3 scoped
+configuration files (See
+[Configuration](https://pip.pypa.io/en/stable/topics/configuration/)):
+* global, such as `/etc/pip.conf`
+* user, such as `~/.config/pip/pip.conf`
+* site, such as `$VIRTUAL_ENV/pip.conf`
+
+Available configuration options are actually the options for the
+subcommands of `pip`.  For example, the option `--index-url` of `pip
+install` specifies where `pip install` looks for packages, such as
+PyPI, so we can `pip config set global.index-url https://example.org`
+to replace PyPI by `https://example.org`.  Subcommands of `pip config`
+are:
+* `pip config list`
+  + list the active configuration.
+* `pip get xxx.yyy`
+  + get the value of the option `yyy` for the command `pip xxx`.
+* `pip set xxx.yyy zzz`
+  + set the value of the option `yyy` for the command `xxx` to `zzz`.
+  + Using the `global` prefix instead of `xxx`, `yyy` affects all
+    commands including `xxx`.
+    - For example, `pip config set global.index-url
+      https://example.org` configure `--index-url` for all subcommands
+      of `pip`, but `pip config set install.index-url` configure
+      `--index-url` only for `pip install`.
+
+Moreover, the options `--global`, `--user`, and `--site` can be used
+to specify which scope of the configuration `pip config` applies to.
+In China, `pip install` is also very slow.  The [PyPI mirror by
+TUNA](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/) can be used by
+the command
+
+```bash
+pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+```
+
+or by the configuration in `pip.conf` below:
+
+```
+[global]
+index-url = https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
+```
+
+
+See also:
+* [Configuration](https://docs.conda.io/projects/conda/en/latest/user-guide/configuration/index.html)
 
 
 ## Reference ##
