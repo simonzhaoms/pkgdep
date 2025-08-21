@@ -279,33 +279,67 @@ can also be used for configuration.
   + remove the YAML configuraiton key `xxx` and all its values.
 
 In China, `conda install` is usually very slow.  Fortunately, there
-are many mirroring channels out there for speedup.  Below is [an
-example of `.condarc`](https://mirrors.ustc.edu.cn/help/anaconda.html)
-that uses the [Anaconda mirroring channels provided by USTC
-(University of Science and Technology of
-China)](https://mirrors.ustc.edu.cn/anaconda/).
+are many mirroring channels out there for speedup:
+* [PKU (Peking University)](https://mirrors.pku.edu.cn/anaconda)
+  + [`.condarc` example](https://mirrors.pku.edu.cn/Help/Anaconda)
+  
+    ```yaml
+    channels:
+        - defaults
+    show_channel_urls: true
+    default_channels:
+        - https://mirrors.pku.edu.cn/anaconda/pkgs/main
+        - https://mirrors.pku.edu.cn/anaconda/pkgs/r
+    custom_channels:
+        conda-forge: https://mirrors.pku.edu.cn/anaconda/cloud
+        pytorch: https://mirrors.pku.edu.cn/anaconda/cloud
+        bioconda: https://mirrors.pku.edu.cn/anaconda/cloud
+    ```
 
-```yaml
-channels:
-  - defaults
-show_channel_urls: true
+* [USTC (University of Science and Technology of
+  China)](https://mirrors.ustc.edu.cn/anaconda/)
+  + [`.condarc`
+    example](https://mirrors.ustc.edu.cn/help/anaconda.html)
 
-# by default,
-#   https://repo.anaconda.com/pkgs/main
-#   https://repo.anaconda.com/pkgs/r
-#   https://repo.anaconda.com/pkgs/msys2
-default_channels:
-  - https://mirrors.ustc.edu.cn/anaconda/pkgs/main
-  - https://mirrors.ustc.edu.cn/anaconda/pkgs/r
-  - https://mirrors.ustc.edu.cn/anaconda/pkgs/msys2
+    ```yaml
+    channels:
+      - defaults
+    show_channel_urls: true
+    
+    # by default,
+    #   https://repo.anaconda.com/pkgs/main
+    #   https://repo.anaconda.com/pkgs/r
+    #   https://repo.anaconda.com/pkgs/msys2
+    default_channels:
+      - https://mirrors.ustc.edu.cn/anaconda/pkgs/main
+      - https://mirrors.ustc.edu.cn/anaconda/pkgs/r
+      - https://mirrors.ustc.edu.cn/anaconda/pkgs/msys2
+    
+    # by default,
+    #   https://conda.anaconda.org/conda-forge
+    #   https://conda.anaconda.org/pytorch
+    custom_channels:
+      conda-forge: https://mirrors.ustc.edu.cn/anaconda/cloud
+      pytorch: https://mirrors.ustc.edu.cn/anaconda/cloud
+    ```
 
-# by default,
-#   https://conda.anaconda.org/conda-forge
-#   https://conda.anaconda.org/pytorch
-custom_channels:
-  conda-forge: https://mirrors.ustc.edu.cn/anaconda/cloud
-  pytorch: https://mirrors.ustc.edu.cn/anaconda/cloud
-```
+* [TUNA (Tsinghua University Network
+  Administrators)](https://mirrors.tuna.tsinghua.edu.cn/anaconda/)
+  + [`condarc`
+    example](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)
+    
+    ```yaml
+    channels:
+      - defaults
+    show_channel_urls: true
+    default_channels:
+      - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+      - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+      - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
+    custom_channels:
+      conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+      pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+    ```
 
 Likewise, [`pip
 config`](https://pip.pypa.io/en/stable/cli/pip_config/) can be used
@@ -337,21 +371,28 @@ are:
 
 Moreover, the options `--global`, `--user`, and `--site` can be used
 to specify which scope of the configuration `pip config` applies to.
-In China, `pip install` is also very slow.  The [PyPI mirror by
-Alibaba](https://developer.aliyun.com/mirror/pypi) can be used by the
-command
+In China, `pip install` is also very slow.  Available PyPI mirrors are
+listed below:
 
-```bash
-pip config set global.index-url http://mirrors.aliyun.com/pypi/simple
-```
+* [Alibaba](https://developer.aliyun.com/mirror/pypi)
+  + `pip config`
+  
+    ```bash
+    pip config set global.index-url http://mirrors.aliyun.com/pypi/simple
+    ```
 
-or by the configuration in `pip.conf` below:
+  + `pip.conf`:
 
-```
-[global]
-index-url = http://mirrors.aliyun.com/pypi/simple
-```
+    ```
+    [global]
+    index-url = http://mirrors.aliyun.com/pypi/simple
+    ```
 
+  + `pip install`
+  
+    ```bash
+    pip install -i http://mirrors.aliyun.com/pypi/simple some-package
+    ```
 
 See also:
 * [Configuration](https://docs.conda.io/projects/conda/en/latest/user-guide/configuration/index.html)
