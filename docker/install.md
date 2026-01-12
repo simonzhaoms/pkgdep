@@ -120,9 +120,11 @@ file](https://docs.docker.com/reference/cli/dockerd/#daemon-configuration-file)
 (`/etc/docker/daemon.json` by default):
 
 ```json
-"registry-mirrors": [
-  "https://docker.m.daocloud.io"  // for Docker Hub
-]
+{
+  "registry-mirrors": [
+    "https://docker.m.daocloud.io"  // for Docker Hub
+  ]
+}
 ```
 
 Then, use the command `docker pull docker/welcome-to-docker`, one can
