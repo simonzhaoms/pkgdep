@@ -378,20 +378,20 @@ listed below:
   + `pip config`
   
     ```bash
-    pip config set global.index-url http://mirrors.aliyun.com/pypi/simple
+    pip config set global.index-url https://mirrors.aliyun.com/pypi/simple
     ```
 
   + `pip.conf`:
 
     ```
     [global]
-    index-url = http://mirrors.aliyun.com/pypi/simple
+    index-url = https://mirrors.aliyun.com/pypi/simple
     ```
 
   + `pip install`
   
     ```bash
-    pip install -i http://mirrors.aliyun.com/pypi/simple some-package
+    pip install -i https://mirrors.aliyun.com/pypi/simple some-package
     ```
 
 See also:
