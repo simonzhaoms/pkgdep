@@ -58,9 +58,11 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
       sudo docker run hello-world
       ```
 
-   1. Manage Docker as a non-root user which is required by VS Code
-      Dev Container Extension.  See
-      https://docs.docker.com/engine/install/linux-postinstall/
+   1. (Optional) Manage Docker as a non-root user which is required by
+      VS Code Dev Container Extension.
+      * This will allow us run `docker` directly instead of `sudo
+        docker`, but the Docker daemon is still run as root.
+      * See https://docs.docker.com/engine/install/linux-postinstall/
 
       ```bash
       # 1. Add current user to the docker group
@@ -75,26 +77,24 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
       ```
 
    1. (Optional) Run the Docker daemon as a non-root user (Rootless
-      mode).  See https://docs.docker.com/engine/security/rootless/
+      mode).
+      * This goes further by running Docker daemon as a non-root user.
+      * See https://docs.docker.com/engine/security/rootless/
 
       ```bash
       # 1. Install prerequisites
-      sudo apt-get install -y dbus-user-session
       sudo apt-get install -y uidmap
-      sudo apt-get install -y systemd-container
-      sudo apt-get install -y docker-ce-rootless-extras
       # 2. Disable system-wide docker daemon
       sudo systemctl disable --now docker.service docker.socket
       sudo rm /var/run/docker.sock
       # 3. Install rootless docker daemon
+      sudo apt-get install -y docker-ce-rootless-extras  # Optional.  Run this if dockerd-rootless-setuptool.sh is not available
       dockerd-rootless-setuptool.sh install
       # 4. Start rootless docker daemon
       systemctl --user start docker
       # 5. Enable the systemd service and launch the daemon on system startup
       systemctl --user enable docker
       sudo loginctl enable-linger $(whoami)
-      # 6. Switch docker context to rootless
-      docker context use rootless
       ```
 
 1. Install [Docker Desktop](https://docs.docker.com/desktop/).
