@@ -46,6 +46,7 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
       
       # 5. Set Docker APT repo source
       #    Need VPN in China to access the docker server
+      sudo mkdir ${APT_LIST/*}
       echo "${APT_ENTRY}" | sudo tee "${APT_LIST}" > /dev/null
       sudo apt-get update
       
