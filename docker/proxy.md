@@ -98,3 +98,25 @@ for more details:
       --env no_proxy='10.60.204.164:5000,mirrors.ucloud.cn,developer.download.nvidia.com'
       --env NO_PROXY='10.60.204.164:5000,mirrors.ucloud.cn,developer.download.nvidia.com'
     ```
+
+## CA Certificates for HTTPS Proxy ##
+
+To use a HTTPS proxy, we need to add the CA certificates of the HTTPS
+proxy to
+* the host machine
+  + This ensures Docker commands like `docker pull` work without
+    issues.
+    
+  ```bash
+  sudo cp [certificate] /usr/local/share/ca-certificates/xxx.crt
+  sudo update-ca-certificates
+  ```
+
+* and the Docker containers or images.
+  + This ensures applications running inside the containers can
+    communicate through the proxy without encountering security
+    warnings or connection failures.
+
+See [Use CA certificates with
+Docker](https://docs.docker.com/engine/network/ca-certs/) for more
+details.
