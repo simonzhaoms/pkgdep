@@ -113,19 +113,22 @@ Linux](https://docs.docker.com/desktop/install/linux-install/)):
 
 ## Registry Mirror ##
 
-[DaoCloud public image
-mirror](https://github.com/DaoCloud/public-image-mirror/tree/main)
-provides access to many popular Docker registries blocked in China.
-
+[Docker Hub](https://hub.docker.com) is not available in China, Docker
+images in Docker Hub can be accessed via registry mirrors, one of
+which is [DaoCloud public image
+mirror](https://github.com/DaoCloud/public-image-mirror/tree/main).
 To use it, one can put following entry into [the Docker daemon
 configuration
 file](https://docs.docker.com/reference/cli/dockerd/#daemon-configuration-file)
-(`/etc/docker/daemon.json` by default):
+(`/etc/docker/daemon.json` by default for regular setup or
+[`${HOME}/.config/docker/daemon.json`](https://docs.docker.com/engine/daemon/)
+when Docker is installed in rootless mode):
 
 ```json
 {
   "registry-mirrors": [
-    "https://docker.m.daocloud.io"  // for Docker Hub
+    "https://docker.m.daocloud.io",  // for Docker Hub
+    "https://mcr.m.daocloud.io"      // mcr.microsoft.com
   ]
 }
 ```

@@ -14,13 +14,11 @@
     - Reference for the docker commands such as `docker build`,
       `docker run`.
   + [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
+  + [Docker Engine overview](https://docs.docker.com/engine/)
+  + [Docker Glossary](https://docs.docker.com/glossary/)
 
 
 ## Glossary ##
-
-See
-* [Docker Engine overview](https://docs.docker.com/engine/)
-* [Docker Glossary](https://docs.docker.com/glossary/)
 
 * **Docker**
   + is a platform that provides the tools to package and run an
