@@ -135,3 +135,8 @@ when Docker is installed in rootless mode):
 
 Then, use the command `docker pull docker/welcome-to-docker`, one can
 get the image `docker/welcome-to-docker`.
+
+In addition to DaoCloud public image mirror,
+[https://docker.1ms.run](https://1ms.run) is also a good option, and a
+list of other available registry mirrors can be found at [STATUS
+MINITOR](https://status.anye.xyz).
